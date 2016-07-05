@@ -247,7 +247,7 @@ int main()
 		    if(sz - actual_end_index > 2000000 && max_start_index != 0)
 		    {
 				
-				cout<<actual_start_index<<"\t"<<actual_end_index<<endl;
+			//	cout<<actual_start_index<<"\t"<<actual_end_index<<endl;
 				segments.push_back(make_pair(0,actual_start_index));
 				segments.push_back(make_pair(actual_start_index+1,sz));
 				
