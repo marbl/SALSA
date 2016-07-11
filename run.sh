@@ -33,4 +33,4 @@ sort -k 3 -g -r new_links > new_links_sorted
 
 #use these score to links_to_graph.py and get scaffolds
 echo 'generating and writing out scaffolds....'
-python links_to_graph.py -c $cleaned_assembly
+python links_to_graph2.py -c $cleaned_assembly
