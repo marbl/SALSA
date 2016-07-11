@@ -1,11 +1,11 @@
 import networkx as nx
 import operator
-# from Bio import SeqIO
-# from Bio.SeqRecord import SeqRecord
-# from Bio.Alphabet import IUPAC
-# from Bio.Seq import Seq
-# from Bio.Alphabet import generic_dna
-# import argparse
+from Bio import SeqIO
+from Bio.SeqRecord import SeqRecord
+from Bio.Alphabet import IUPAC
+from Bio.Seq import Seq
+from Bio.Alphabet import generic_dna
+import argparse
 
 revcompl = lambda x: ''.join([{'A':'T','C':'G','G':'C','T':'A'}[B] for B in x][::-1])
 
@@ -23,12 +23,12 @@ id2seq = {}
 
 recs = []
 
-# input_handle = open("../scaffold/chromosomes/NA19240_test_asm_p_ctg_2016-05-16.cleaned.fa", "rU") 
+input_handle = open("../scaffold/chromosomes/NA19240_test_asm_p_ctg_2016-05-16.cleaned.fa", "rU") 
 
-# for record in SeqIO.parse(input_handle, "fasta"):
-#     id,seq = record.id, str(record.seq)
-#     #print id
-#     id2seq[id] = seq
+for record in SeqIO.parse(input_handle, "fasta"):
+    id,seq = record.id, str(record.seq)
+    #print id
+    id2seq[id] = seq
 
 def break_cycle(nodes):
     nodeset = set()
@@ -124,7 +124,7 @@ with open("new_links_sorted",'r') as f:
             edgemap[key] +=  int(row[-1])
 
         if v1 not in existing_nodes and v2 not in existing_nodes:
-            if count < 10:
+            if count < 25:
                 continue
             G.add_edge( v1, v2, score=score, t="x" )
             existing_nodes.add(v1)
@@ -155,6 +155,9 @@ for subg in nx.connected_component_subgraphs(G):
                 continue
             backbone_paths[path_id] = path
             path_id += 1
+        else:
+            for each in subg.nodes():
+                to_merge.add(each.split(':')[0])
         continue
     else:
         path = nx.shortest_path(subg, p0[0], p0[1])
@@ -298,7 +301,7 @@ for path_id in path_to_contig:
                         pos = i+1
 
 
-        if total_max > 15:
+        if total_max > 25:
             if orientation == 'fow':
                 if pos == 0:
                     path.insert(0,end)
@@ -333,6 +336,9 @@ for path_id in path_to_contig:
 
     backbone_paths[path_id] = path
 
+for key in backbone_paths:
+    if len(backbone_paths[key]) >= 4:
+        print backbone_paths[key]
 
 # for key1 in backbone_paths:
 #     max_weight = 0
@@ -369,7 +375,10 @@ for key in backbone_paths:
                 curr_contig += id2seq[curr[0]]
             if curr[1] == 'E' and next[1] == 'B':
                 curr_contig += revcompl(id2seq[curr[0]])
-        rec = SeqRecord(Seq(curr_contig,generic_dna),id=str(c_id))
+            if i != len(path) - 2:
+                for j in range(0,500):
+                    curr_contig += 'N'
+        rec = SeqRecord(Seq(curr_contig,generic_dna),id='scaffold_'+str(c_id))
         recs.append(rec)
         c_id += 1
-SeqIO.write(recs,'scaffolds_new.fasta','fasta')
+SeqIO.write(recs,'scaffolds_new_2.0.fasta','fasta')
