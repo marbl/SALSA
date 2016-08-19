@@ -9,6 +9,7 @@
 #include <cmath>
 #include <queue>
 
+#include "cmdline.h"
 
 using namespace std;
 
@@ -69,9 +70,14 @@ char* getCharExpr(string s)
         return a;
 }
 
-int main()
+int main(int argc, char *argv[])
 {
-	ifstream bedfile("alignment_unique.bed");
+	cmdline::parser p;
+	p.add<string>("alignment", 'a', "bed file for alignment", true, "");
+	p.add<string>("outputdir", 'd', "coordinate output file", true, "");
+	p.add<string>("contiglen", 'l', "length of contigs", true, "");
+	p.parse_check(argc, argv);	
+	ifstream bedfile(getCharExpr(p.get<string>("alignment")));
 	string line;
 	while(getline(bedfile,line))
 	{
@@ -137,8 +143,8 @@ int main()
 
 	bedfile.close();
 	cerr<<"bedfile loaded"<<endl;
-	ofstream outputfile("alignment_unique_clean.bed");
-	ofstream outputfile2("breakpoints");
+	ofstream outputfile(getCharExpr(p.get<string>("outputdir")+"/alignment_unique_clean.bed"));
+	ofstream outputfile2(getCharExpr(p.get<string>("outputdir")+"/breakpoints"));
 	//ofstream outputfile1("length_to_coverage");
 	/*
 	for(unordered_map<string,vector<pair<long,long> > >  :: iterator it = intervals.begin(); it != intervals.end(); ++it)
@@ -147,7 +153,7 @@ int main()
 		sort(longs.begin(),longs.end());
 		intervals[it->first] = longs;
 	}*/
-	ifstream lenfile("contig_lengths");
+	ifstream lenfile(getCharExpr(p.get<string>("contiglen")));
 	while(getline(lenfile,line))
 	{
 		istringstream iss(line);

@@ -11,10 +11,11 @@ def main():
 	parser.add_argument("-b","--breakpoint",help="file containing breakpoints")
 	parser.add_argument("-a","--assembly",help="fasta file containing contigs")
 	parser.add_argument("-o","--outfile",help="new assembly file")
+	parser.add_argument("-l","--lenfile",help="length of contigs")
 
 	args = parser.parse_args()
 
-	lenfile = open('contig_lengths_new','w')
+	lenfile = open(args.lenfile,'w')
 
 	lenmap = {}
 	input_handle = open(args.assembly, "rU") 
