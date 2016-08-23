@@ -14,25 +14,25 @@ def main():
     if not os.path.exists(args.dir):
         os.makedirs(args.dir)
 
-    # if os.path.exists(args.dir+'/alignment_unique.bed') == False:
-    #     print >> sys.stderr, "convertng bam file to bed file"
-    #     os.system('bamToBed -i ' + args.mapping + " > " + args.dir+'/alignment_unique.bed')
-    #     print >> sys.stderr, 'finished conversion'
-    # os.system('samtools faidx '+args.assembly)
-    # os.system('cut -f 1,2 '+ args.assembly+'.fai > '+args.dir+'/contig_length_new')
+    if os.path.exists(args.dir+'/alignment_unique.bed') == False:
+        print >> sys.stderr, "convertng bam file to bed file"
+        os.system('bamToBed -i ' + args.mapping + " > " + args.dir+'/alignment_unique.bed')
+        print >> sys.stderr, 'finished conversion'
+    os.system('samtools faidx '+args.assembly)
+    os.system('cut -f 1,2 '+ args.assembly+'.fai > '+args.dir+'/contig_length_new')
 
-    # print >> sys.stderr, 'finished conversion'
+    print >> sys.stderr, 'finished conversion'
 
     final_assembly = args.assembly
     final_mapping = args.mapping
 
 
-    # if args.missassembly:
-    #     print >> sys.stderr, 'started finding misassemblies'
-    #     final_assembly = args.dir+'/cleaned.fa'
-    #     os.system('./break_contigs -a '+args.dir+'/alignment_unique.bed' +' -d ' + args.dir + ' -l ' + args.dir+'/contig_length_new')
-    #     os.system('python break_contigs.py -b '+args.dir+'/breakpoints' + ' -a ' + args.assembly + ' -l ' + args.dir+'/contig_length_new' + ' -o ' + final_assembly)
-    #     print >> sys.stderr, 'finished detecting misassemblies'
+    if args.missassembly:
+        print >> sys.stderr, 'started finding misassemblies'
+        final_assembly = args.dir+'/cleaned.fa'
+        os.system('./break_contigs -a '+args.dir+'/alignment_unique.bed' +' -d ' + args.dir + ' -l ' + args.dir+'/contig_length_new')
+        os.system('python break_contigs.py -b '+args.dir+'/breakpoints' + ' -a ' + args.assembly + ' -l ' + args.dir+'/contig_length_new' + ' -o ' + final_assembly)
+        print >> sys.stderr, 'finished detecting misassemblies'
 
     print >> sys.stderr, 'started generating links between contigs'
     os.system('python RE_sites.py -a '+ final_assembly + ' > '+ args.dir + '/RE_counts')
