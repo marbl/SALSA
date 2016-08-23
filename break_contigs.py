@@ -1,8 +1,5 @@
-from Bio import SeqIO
-from Bio.SeqRecord import SeqRecord
-from Bio.Alphabet import IUPAC
-from Bio.Seq import Seq
-from Bio.Alphabet import generic_dna
+from pbcore.io import FastaReader
+from pbcore.io import FastaWriter
 import argparse
 
 def main():
@@ -18,10 +15,10 @@ def main():
 	lenfile = open(args.lenfile,'w')
 
 	lenmap = {}
-	input_handle = open(args.assembly, "rU") 
-	for record in SeqIO.parse(input_handle, "fasta"):
-	    id,seq = record.id, str(record.seq)
-	    id2seq[id] = seq
+	f = FastaReader(args.assembly)
+    for record in f:
+        id = record.id
+        id2seq[id] = record.sequence[0:-10]
 
 
 	new_seq = {}
@@ -40,10 +37,9 @@ def main():
 			lenmap[new_id] = end - start + 1
 
 	rec_list = []
+	writer = FastaWriter(args.scaffold)
 	for key in new_seq:
-		rec = SeqRecord(Seq(new_seq[key],generic_dna),id=key)
-		rec_list.append(rec)
-	SeqIO.write(rec_list,args.outfile,'fasta')
+		writer.writeRecord(key,new_seq[key])
 
 	for key in lenmap:
 		lenfile.write(key + "\t" + str(lenmap[key]) + '\n')
