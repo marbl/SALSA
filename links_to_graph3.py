@@ -4,7 +4,7 @@ from pbcore.io import FastaReader
 from pbcore.io import FastaWriter
 import argparse
 
-revcompl = lambda x: ''.join([{'A':'T','C':'G','G':'C','T':'A'}[B] for B in x][::-1])
+revcompl = lambda x: ''.join([{'A':'T','C':'G','G':'C','T':'A','a':'t','c':'g','g':'c','t':'a','n':'n', 'N':'N'}[B] for B in x][::-1])
 
 H = nx.Graph()
 G = nx.Graph()
