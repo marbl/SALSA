@@ -31,7 +31,7 @@ def main():
 
     for record in f:
         id = record.id
-        print id
+        #print id
         id2seq[id] = record.sequence[0:-10]
 
     def break_cycle(nodes):
@@ -386,15 +386,16 @@ def main():
     writer = FastaWriter(args.scaffold)
     for key in backbone_paths:
         if len(backbone_paths[key]) >= 4:
-            path = backbone_paths[key]
+	    path = backbone_paths[key]
+	    print path
             curr_contig = ""
-            print c_id
+            #print c_id
             for i in range(0,len(path)-1,2):
                 curr = path[i]
                 next = path[i+1]
                 curr = curr.split(':')
                 next = next.split(':')
-                print curr
+                #print curr
                 if curr[1] == 'B' and next[1] == 'E':
                     curr_contig += id2seq[curr[0]]
                 if curr[1] == 'E' and next[1] == 'B':
@@ -405,7 +406,7 @@ def main():
                         curr_contig += 'N'
             # rec = SeqRecord(Seq(curr_contig,generic_dna),id='scaffold_'+str(c_id))
             # recs.append(rec)
-            print c_id
+            #print c_id
             writer.writeRecord('scaffold_'+str(c_id),curr_contig)
             c_id += 1
 

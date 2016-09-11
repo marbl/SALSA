@@ -70,7 +70,8 @@ def main():
 
                         len1 = contig_lengths[first]
                         len2 = contig_lengths[second]
-
+			#l1 = len1/4
+			#l2 = len2/4
                         r1 = l1 / len1
                         r2 = l2 / len2
                         if pos1 <= l1 and pos2 <= l2:
@@ -113,7 +114,7 @@ def main():
   
 
 
-    print len(contig_links)
+    #print len(contig_links)
 
     for key in contig_links:
         if key != '':
