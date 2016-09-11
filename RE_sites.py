@@ -1,8 +1,4 @@
-from Bio import SeqIO
-from Bio.SeqRecord import SeqRecord
-from Bio.Alphabet import IUPAC
-from Bio.Seq import Seq
-from Bio.Alphabet import generic_dna
+from pbcore.io import FastaReader
 
 import re 
 import argparse
@@ -14,9 +10,10 @@ def main():
     #parser.add_argument("-d","--dir",help="output directory for results",default='out')
     args = parser.parse_args()
     RF = 'AAGCTT'
-    for record in SeqIO.parse(args.assembly, "fasta"):
+    f = FastaReader(args.assembly)
+    for record in f:
         
-        id,seq = record.id, str(record.seq)
+        id,seq = record.id, str(record.sequence)
 
         pos  = [m.start(0) for m in re.finditer(RF,seq)]
      
