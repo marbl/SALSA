@@ -9,7 +9,7 @@ RF_counts_right = {}
 
 def main():
     parser = argparse.ArgumentParser()
-    parser.add_argument("-m","--mapping", help="mapping of read to contigs in bam format")
+    parser.add_argument("-b","--mapping", help="mapping of read to contigs in bed format")
     parser.add_argument("-c",'--counts',help="RE counts")
     parser.add_argument("-l",'--contiglen',help="file containing length of contigs")
 
