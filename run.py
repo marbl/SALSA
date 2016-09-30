@@ -50,7 +50,7 @@ def main():
     if os.path.exists(args.dir+'/RE_counts') == False:
        os.system('python ' + bin + '/RE_sites.py -a '+ final_assembly + ' > '+ args.dir + '/RE_counts')
     if os.path.exists(args.dir+'/new_links') == False:
-       os.system('python ' + bin + '/create_links1.py -m '+args.dir+'/alignment_unique.bed' + ' -c '+ args.dir+'/RE_counts' + ' -l ' + args.dir+'/contig_length_new > '+args.dir+'/new_links')
+       os.system('python ' + bin + '/new_links.py -m '+args.dir+'/alignment_unique.bed' + ' -c '+ args.dir+'/RE_counts' + ' -l ' + args.dir+'/contig_length_new > '+args.dir+'/new_links')
     if os.path.exists(args.dir+'/new_links_sorted') == False:
        os.system('sort -k 3 -g -r '+args.dir+'/new_links > '+args.dir+'/new_links_sorted') 
     print >> sys.stderr, 'done generating links between contigs'
