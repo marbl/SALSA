@@ -26,8 +26,10 @@ def main():
     parser.add_argument("-l","--links",help="links sorted by score")
     parser.add_argument("-n","--length",help="contig length")
     parser.add_argument("-o","--agp",help="output agp file for scaffolds")
+    parser.add_argument("-c","--cutoff",help="cutoff for lengths")
     args = parser.parse_args()
 
+    cutoff = args.cutoff
     f = FastaReader(args.cleaned)
 
     for record in f:
@@ -103,6 +105,8 @@ def main():
             count = float(row[3])
             c1 = v1.split(":")[0]
             c2 = v2.split(":")[0]
+            if contig_length[c1] <= cutoff or contig_length[c2] <= cutoff:
+                continue
             contigs.add(c1)
             contigs.add(c2)
 

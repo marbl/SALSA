@@ -9,6 +9,7 @@ def main():
     parser.add_argument("-a","--assembly",help="assembled contigs",required=True)
     parser.add_argument("-m","--mapping", help="mapping of read to contigs in bam format",required=True)
     parser.add_argument("-d","--dir",help="output directory for results",default='out',required=True)
+    parser.add_argument("-c","--cutoff",help="cutoff for contig lengths to consider",default=1000,required=False)
     parser.add_argument("-b",'--missassembly',help="add flag to find and break misassemblies from the contigs",default=False)
     parser.add_argument("-f",'--force',help="force re-run of pipeline, will remove any existing output",default=False)
 
@@ -57,7 +58,7 @@ def main():
 
     print >> sys.stderr, 'started scaffolding'
     if os.path.exists(args.dir+'/scaffolds.fasta') == False:
-       os.system('python ' + bin + '/links_to_graph3.py -a '+final_assembly+' -f '+args.dir+'/scaffolds.fasta'+' -l '+args.dir+'/new_links_sorted'+ ' -n '+args.dir+'/contig_length_new -o '+ args.dir+'/scaffold.agp > '+args.dir+'/paths')
+       os.system('python ' + bin + '/links_to_graph3.py -a '+final_assembly+' -f '+args.dir+'/scaffolds.fasta'+' -l '+args.dir+'/new_links_sorted'+ ' -n '+args.dir+'/contig_length_new -o '+ args.dir+'/scaffold.agp -c '+ args.cutoff + '> '+args.dir+'/paths')
 
     print >> sys.stderr, 'done scaffolding, sequences written to file'
 
