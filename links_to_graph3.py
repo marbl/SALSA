@@ -29,7 +29,7 @@ def main():
     parser.add_argument("-c","--cutoff",help="cutoff for lengths")
     args = parser.parse_args()
 
-    cutoff = args.cutoff
+    cutoff = int(args.cutoff)
     f = FastaReader(args.cleaned)
 
     for record in f:
@@ -111,7 +111,7 @@ def main():
             contigs.add(c2)
 
             if c1 not in nodes_to_edges:
-                nodes_to_edges[c1] = []
+                nodes_to_edges[c1] = [] 
             if c2 not in nodes_to_edges:
                 nodes_to_edges[c2] = []
             nodes_to_edges[c1].append((v1,v2,float(row[3])))
