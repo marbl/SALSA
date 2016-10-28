@@ -58,7 +58,7 @@ def main():
 
     print >> sys.stderr, 'started scaffolding'
     if os.path.exists(args.dir+'/scaffolds.fasta') == False:
-       os.system('python ' + bin + '/links_to_graph3.py -a '+final_assembly+' -f '+args.dir+'/scaffolds.fasta'+' -l '+args.dir+'/new_links_sorted'+ ' -n '+args.dir+'/contig_length_new -o '+ args.dir+'/scaffold.agp -c '+ str(args.cutoff) + '> '+args.dir+'/paths')
+       os.system('python ' + bin + '/links_to_graph3.py -a '+final_assembly+' -f '+args.dir+'/scaffolds.fasta'+' -l '+args.dir+'/new_links_sorted'+ ' -n '+args.dir+'/contig_length_new -o '+ args.dir+'/scaffold.agp -c '+ str(args.cutoff) + ' > '+args.dir+'/paths')
 
     print >> sys.stderr, 'done scaffolding, sequences written to file'
 
