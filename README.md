@@ -1,4 +1,4 @@
-# Hi-C Scaffold
+# SALSA: A tool to scaffold long read assemblies with Hi-C 
 ## (This work is sponsored by Pacific Biosciences, Menlo Park)
 
 This code is used to scaffold your assemblies using Hi-C data. To use the code first run the following command:
