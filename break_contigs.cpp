@@ -95,10 +95,8 @@ int main(int argc, char *argv[])
 			vector<BedRecord> recs;
 			contig_to_record[contig] =recs;
 		}
-		else
-		{
-			contig_to_record[contig].push_back(rec);
-		}
+		contig_to_record[contig].push_back(rec);
+		
 		if(read[read.length() -1 ] == '1')
         {
                 first_in_pair[read.substr(0,read.length()-2)] = rec;
