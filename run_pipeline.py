@@ -136,7 +136,7 @@ def main():
 
     iter_num += 1
 
-    if iter_num - 1 == args.iter:
+    if iter_num - 1 == int(args.iter):
         cmd ='python '+bin+'/get_seq.py -a '+ args.assembly + ' -f ' + args.output+'/scaffolds_FINAL.fasta -g ' + args.output+'/scaffolds_FINAL.agp -p '+args.output+'/scaffolds_iteration_'+str(args.iter)+'.p'
         log.write(cmd+'\n')
         os.system(cmd)
@@ -196,8 +196,8 @@ def main():
                 sys.exit(1)
 
 
-        if iter_num - 1 == args.iter:
-            cmd ='python '+bin+'/get_seq.py -a '+ args.assembly + ' -f ' + args.output+'/scaffolds_FINAL.fasta -g ' + args.output+'/scaffolds_FINAL.agp -p '+args.output+'/   scaffolds_iteration_'+str(args.iter)+'.p'
+        if iter_num  == int(args.iter):
+            cmd ='python '+bin+'/get_seq.py -a '+ args.assembly + ' -f ' + args.output+'/scaffolds_FINAL.fasta -g ' + args.output+'/scaffolds_FINAL.agp -p '+args.output+'/scaffolds_iteration_'+str(args.iter)+'.p'
             log.write(cmd+'\n')
             os.system(cmd)
             sys.exit(1)
