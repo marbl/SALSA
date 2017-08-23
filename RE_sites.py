@@ -29,21 +29,32 @@ def main():
     #parser.add_argument("-d","--dir",help="output directory for results",default='out')
     args = parser.parse_args()
     f = parse_fasta(open(args.assembly,'r'))
+    enzymes_input = args.enzyme.replace(' ','').split(',')
+    final_enzymes = []
+    for each in enzymes_input:
+        if 'N' in each:
+            final_enzymes.append(each.replace('N','G'))
+            final_enzymes.append(each.replace('N','A'))
+            final_enzymes.append(each.replace('N','T'))
+            final_enzymes.append(each.replace('N','C'))
+        else:
+            final_enzymes.append(each)
+
+
     for key in f:
         
         id,seq = key, f[key]
-
-        pos  = [m.start(0) for m in re.finditer(args.enzyme,seq)]
-     
-        length = len(seq)
-
         left_count = 0
         rigt_count = 0
-        for each in pos:
-        	if each < length/2:
-        		left_count += 1
-        	else:
-        		rigt_count += 1
+        for enzyme in final_enzymes:
+            pos  = [m.start(0) for m in re.finditer(enzyme,seq)]
+         
+            length = len(seq)    
+            for each in pos:
+            	if each < length/2:
+            		left_count += 1
+            	else:
+            		rigt_count += 1
 
         # pos  = [m.start(0) for m in re.finditer(r"GA[ACTG]TC",seq)]
      
