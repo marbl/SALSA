@@ -83,20 +83,20 @@ for key in scaff_map:
             curr_contig += revcompl(id2seq[curr[0]])
 
         agp_output.write(line+'\n')
-        line = ""
-        line += str(key)+'\t'
-        line += str(start) +'\t'
-        end = 500 + start - 1
-        line += str(end) + '\t'
-        start = end + 1
-        line += str(local_comp) +'\t'
-        local_comp += 1
-        line += 'N\t500\tscaffold\tyes\tna'
-        agp_output.write(line+'\n')
-        line="" 
         if i != len(path) - 2:
             for j in range(0,500):
                 curr_contig += 'N'
+            line = ""
+            line += str(key)+'\t'
+            line += str(start) +'\t'
+            end = 500 + start - 1
+            line += str(end) + '\t'
+            start = end + 1
+            line += str(local_comp) +'\t'
+            local_comp += 1
+            line += 'N\t500\tscaffold\tyes\tna'
+            agp_output.write(line+'\n')
+            line="" 
     # rec = SeqRecord(Seq(curr_contig,generic_dna),id='scaffold_'+str(c_id))
     # recs.append(rec)
     # print c_id
