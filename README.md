@@ -30,7 +30,12 @@ optional arguments:
 
 The fasta file containing final scaffolds will be generated in your output directory as ```scaffold.fasta```. Each step in the pipeline is easy to run on its own as well. You can tweak the parameters in the files to suit your data and run the whole pipeline.
 
-##Results
+If you consider using this tool, please cite our publication which describes the methods used for scaffolding.
+
+Ghurye, J., Pop, M., Koren, S., Bickhart, D., & Chin, C. S. (2017). Scaffolding of long read assemblies using long range contact information. BMC genomics, 18(1), 527. [Link](https://bmcgenomics.biomedcentral.com/articles/10.1186/s12864-017-3879-z)
+
+
+## Results
 
 We ran this tool on the assembly of NA12878 with N50 = 1.55 Mb and used 725 million hi-c reads for scaffolding. Our final scaffold had N50 = 80 Mb. Here are the dotplots for the chromosomes
 
