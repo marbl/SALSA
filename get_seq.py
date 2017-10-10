@@ -52,6 +52,7 @@ for key in scaff_map:
     path = scaff_map[key]
     scaff_len = 0
     curr_contig = ""
+    line = ''
     #print c_id
     for i in range(0,len(path)-1,2):
         line += str(key)
