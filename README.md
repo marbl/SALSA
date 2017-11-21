@@ -11,8 +11,23 @@ To use the latest version, first run the following commands:
 
 To run the code, you will need [BOOST](http://www.boost.org/) libraries and [Networkx](https://networkx.github.io/).
 
-is easy to run on its own as well. You can tweak the parameters in the files to suit your data and run the whole pipeline.
 
 If you consider using this tool, please cite our publication which describes the methods used for scaffolding.
 
 Ghurye, J., Pop, M., Koren, S., Bickhart, D., & Chin, C. S. (2017). Scaffolding of long read assemblies using long range contact information. BMC genomics, 18(1), 527. [Link](https://bmcgenomics.biomedcentral.com/articles/10.1186/s12864-017-3879-z)
+
+## How to run the code?
+
+The new version of SALSA has been designed to consider several use cases depending on the input. Some assemblers output assembly graph as well along with the contig sequences. We provide options to use different information provided by the assembly to use for the scaffolding.
+
+### Mapping Reads
+
+To start the scaffolding, first step is to map reads to the assembly. We recommend using BWA or BOWTIE2 aligner to map reads. The read mapping generates a `bam` file. SALSA requires `bed` file as the input. This can be done using the `bamToBed` command from the [Bedtools](http://bedtools.readthedocs.io/en/latest/) package. Also, SALSA requires bed file to be sored by the read name, rather than the alignment coordinates. Once you have bam file, you can run following commands to get the bam
+file needed as an input to SALSA.
+
+```
+bamToBed -i alignment.bam > alignment.bed
+sort -k 4 alignment.bed > tmp && mv tmp alignment.bed
+```
+
+### I have contig sequence 
