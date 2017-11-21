@@ -3,10 +3,11 @@
 
 This code is used to scaffold your assemblies using Hi-C data. To use the code first run the following command:
 ```
+  cd SALSA
   make
 ```
 
-To run the code, you will need [Samtools](http://samtools.sourceforge.net), [Bedtools](http://bedtools.readthedocs.io/en/latest/), [pbcore](https://github.com/PacificBiosciences/pbcore) and [Networkx](https://networkx.github.io/).
+To run the code, you will need [BOOST](http://www.boost.org/) libraries and [Networkx](https://networkx.github.io/).
 
 is easy to run on its own as well. You can tweak the parameters in the files to suit your data and run the whole pipeline.
 
