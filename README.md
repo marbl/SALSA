@@ -1,7 +1,9 @@
 # SALSA: A tool to scaffold long read assemblies with Hi-C 
 
 
-This code is used to scaffold your assemblies using Hi-C data. To use the code first run the following command:
+This code is used to scaffold your assemblies using Hi-C data. This version implements some improvements in the original SALSA algorithm. If you want to use the old version, it can be found in the `old_salsa` branch. 
+
+To use the latest version, first run the following commands:
 ```
   cd SALSA
   make
