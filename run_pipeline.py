@@ -216,7 +216,7 @@ def main():
         cmd ='python '+bin+'/get_seq.py -a '+ args.output + '/assembly.cleaned.fasta -f ' + args.output+'/scaffolds_FINAL.fasta -g ' + args.output+'/scaffolds_FINAL.agp -p '+args.output+'/scaffolds_iteration_'+str(args.iter)+'.p'
         log.write(cmd+'\n')
         os.system(cmd)
-        sys.exit(1)
+        sys.exit(0)
     #now do iterative
     while True:
         print >> sys.stderr, "Starting Iteration "+ str(iter_num)
@@ -307,7 +307,7 @@ def main():
                 cmd ='python '+bin+'/get_seq.py -a '+ args.output + '/assembly.cleaned.fasta -f ' + args.output+'/scaffolds_FINAL.fasta -g ' + args.output+'/scaffolds_FINAL.agp -p '+args.output+'/scaffolds_iteration_'+str(iter_num-1)+'.p'
                 log.write(cmd+'\n')
                 os.system(cmd)
-                sys.exit(1)
+                sys.exit(0)
 
         iter_num += 1
 
