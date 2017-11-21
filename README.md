@@ -92,3 +92,22 @@ python run_pipeline.py -a contigs.fasta -l contigs.fasta.fai -b alignment.bed -e
 
 If you want to know what were the locations in the contigs where SALSA found errors, you can look at the `input_breaks` file in the output directory.
 
+### 3) I want to use the assembly graph to assist scaffolding 
+
+Some assembles output gfa file for the assembly graph. You can use that as an input for SALSA as follows
+
+```
+python run_pipeline.py -a contigs.fasta -l contigs.fasta.fai -b alignment.bed -e {Your Enzyme} -o scaffolds -m yes -g contigs_graph.gfa
+```
+
+We utilize graph to guide the scaffolding, which in turn reduces the errors.
+
+### 4) I have unitigs, unitigs assembly graph and the tiling of unitigs along the potential contigs
+
+Assemblers sometimes outputs unitigs along with contigs. Usually unitigs are shorter in size compared to contigs and hence contain much fewer errors. Also, assembly graph contributes more to the scaffolding if used with unitigs instead of contigs. If you have all this data, you can run SALSA as follows.
+
+```
+ python run_pipeline.py -a unitigs.fasta -l unitigs.fasta.fai -b alignment.bed -e {Your Enzyme} -o scaffolds -m yes -g unitigs_graph.gfa -u unitigs_tiling.bed
+```
+
+Note here that using `unitigs_tiling.bed` is not mandatory to run SALSA in this mode. You can still run SALSA with `-u` option not set.
