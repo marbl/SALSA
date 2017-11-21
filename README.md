@@ -9,7 +9,7 @@ To use the latest version, first run the following commands:
   make
 ```
 
-To run the code, you will need [BOOST](http://www.boost.org/) libraries and [Networkx](https://networkx.github.io/).
+To run the code, you will need Python 2.7, [BOOST](http://www.boost.org/) libraries and [Networkx](https://networkx.github.io/).
 
 
 If you consider using this tool, please cite our publication which describes the methods used for scaffolding.
@@ -18,7 +18,8 @@ Ghurye, J., Pop, M., Koren, S., Bickhart, D., & Chin, C. S. (2017). Scaffolding 
 
 ## How to run the code?
 
-The new version of SALSA has been designed to consider several use cases depending on the input. Some assemblers output assembly graph as well along with the contig sequences. We provide options to use different information provided by the assembly to use for the scaffolding.
+The new version of SALSA has been designed to consider several use cases depending on the input. Some assemblers output assembly graph as well along with the contig sequences. We provide options to use different information provided by the assembly to use for the scaffolding. Here is the what input options look like
+
 
 ### Mapping Reads
 
@@ -30,4 +31,14 @@ bamToBed -i alignment.bam > alignment.bed
 sort -k 4 alignment.bed > tmp && mv tmp alignment.bed
 ```
 
-### I have contig sequence 
+### Generating contig lengths file
+
+SALSA requires contig lengths as an input. You can generate this file using this command on your contig sequence file.
+```
+samtools faidx contigs.fasta
+```
+
+This will generate `contigs.fasta.fai` as an output. You can use this file for contig lengths while running SALSA.
+
+### I have contig sequence and the alignment bam file
+This is the minimum input you will require Suppose you only have contig sequences generated 
