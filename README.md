@@ -20,6 +20,38 @@ Ghurye, J., Pop, M., Koren, S., Bickhart, D., & Chin, C. S. (2017). Scaffolding 
 
 The new version of SALSA has been designed to consider several use cases depending on the input. Some assemblers output assembly graph as well along with the contig sequences. We provide options to use different information provided by the assembly to use for the scaffolding. Here is the what input options look like
 
+```
+python run_pipeline.py -h
+usage: run_pipeline.py [-h] -a ASSEMBLY -l LENGTH -b BED [-o OUTPUT]
+                       [-c CUTOFF] [-g GFA] [-u UNITIGS] [-t TENX] [-e ENZYME]
+                       [-i ITER] [-x DUP] [-s EXP] [-m CLEAN]
+
+SALSA Iterative Pipeline
+
+optional arguments:
+  -h, --help            show this help message and exit
+  -a ASSEMBLY, --assembly ASSEMBLY
+                        Path to initial assembly
+  -l LENGTH, --length LENGTH
+                        Length of contigs at start
+  -b BED, --bed BED     Bed file of alignments sorted by read names
+  -o OUTPUT, --output OUTPUT
+                        Output directory to put results
+  -c CUTOFF, --cutoff CUTOFF
+                        Minimum contig length to scaffold, default=1000
+  -g GFA, --gfa GFA     GFA file for assembly
+  -u UNITIGS, --unitigs UNITIGS
+                        The tiling of unitigs to contigs in bed format
+  -t TENX, --tenx TENX  10x links tab separated file, sorted by last columnls
+  -e ENZYME, --enzyme ENZYME
+                        Restriction Enzyme used for experiment
+  -i ITER, --iter ITER  Number of iterations to run, default = 3
+  -x DUP, --dup DUP     File containing duplicated contig information
+  -s EXP, --exp EXP     Expected Genome size of the assembled genome
+  -m CLEAN, --clean CLEAN
+                        Set this option to "yes" if you want to find
+                        misassemblies in input assembly
+```
 
 ### Mapping Reads
 
