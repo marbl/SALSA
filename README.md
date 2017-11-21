@@ -70,7 +70,25 @@ SALSA requires contig lengths as an input. You can generate this file using this
 samtools faidx contigs.fasta
 ```
 
-This will generate `contigs.fasta.fai` as an output. You can use this file for contig lengths while running SALSA.
+This will generate `contigs.fasta.fai` as an input for `-l` option. You can use this file for contig lengths while running SALSA.
 
-### I have contig sequence and the alignment bam file
-This is the minimum input you will require Suppose you only have contig sequences generated 
+### Restriction Enzyme input
+
+Hi-C experiments can use different restriction enzymes. We use the enzyme frequency in contigs to normalize the Hi-C interaction frequency. You will need to specify which enzyme was used for Hi-C experiment while running SALSA in `-e` option. If multiple enzymes were used, they can specified by separating with comma without space, like `-e GATC,AAGCTT`.
+
+
+### 1) I have contig sequences and the alignment bam file
+This is the minimum input you will require Suppose you only have contig sequences generated. Once you prepare the bed file as described above, the code can be run as follows:
+```
+python run_pipeline.py -a contigs.fasta -l contigs.fasta.fai -b alignment.bed -e {Your Enzyme} -o scaffolds 
+```
+
+### 2) I have contig sequences and the alignment bam file but also want to use Hi-C data to correct input assembly errors
+
+We also implemented a method in SALSA that can correct some of the errors in the assembly with Hi-C data. To use this method, you need to run following
+```
+python run_pipeline.py -a contigs.fasta -l contigs.fasta.fai -b alignment.bed -e {Your Enzyme} -o scaffolds -m yes
+```
+
+If you want to know what were the locations in the contigs where SALSA found errors, you can look at the `input_breaks` file in the output directory.
+
