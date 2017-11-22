@@ -16,6 +16,8 @@ If you consider using this tool, please cite our publication which describes the
 
 Ghurye, J., Pop, M., Koren, S., Bickhart, D., & Chin, C. S. (2017). Scaffolding of long read assemblies using long range contact information. BMC genomics, 18(1), 527. [Link](https://bmcgenomics.biomedcentral.com/articles/10.1186/s12864-017-3879-z)
 
+
+For any queries, please either ask on github issue page or send an email to Jay Ghurye (jayg@cs.umd.edu).
 ## How to run the code?
 
 The new version of SALSA has been designed to consider several use cases depending on the input. Some assemblers output assembly graph as well along with the contig sequences. We provide options to use different information provided by the assembly to use for the scaffolding. Here is the what input options look like
@@ -125,4 +127,13 @@ This can happen as unitigs are shorter chunks of sequence. If you have a bed fil
 ```
 python stitch.py -c contigs.fasta -u unitigs.fasta -p scaffolds_iteration_x.p -o output_scaffolds.fasta
 ```
-Here, `scaffolds_iteration_x.p` is the pickle file for scaffolds. If your code ran for 3 iterations, this file will be present in the output folder as `scaffolds_iteration_3.p`.  
+Here, `scaffolds_iteration_x.p` is the pickle file for scaffolds. If your code ran for 3 iterations, this file will be present in the output folder as `scaffolds_iteration_3.p`. 
+
+### I want scaffolds sequences for all iterations rather than just final scaffolds
+
+To dig more into the output, we have added an option that can output scaffolds along with the agp file for all intermediate iterations. This option is usually helpful in debugging and exploring the errors. Here is how you can run it:
+
+```
+ python run_pipeline.py -a unitigs.fasta -l unitigs.fasta.fai -b alignment.bed -e {Your Enzyme} -o scaffolds -m yes -g unitigs_graph.gfa -u    unitigs_tiling.bed -p yes
+```
+
