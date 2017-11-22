@@ -43,6 +43,8 @@ def main():
     parser.add_argument("-x",'--dup',help='File containing duplicated contig information',required=False,default='abc')
     parser.add_argument("-s",'--exp',help="Expected Genome size of the assembled genome",required=False,default=0)
     parser.add_argument("-m","--clean",help="Set this option to \"yes\" if you want to find misassemblies in input assembly",required=False,default="no")
+    parser.add_argument("-p","--prnt",help="Set this option to \"yes\" if you want to output the scaffolds sequence and agp file for each iteration", required=False,default="no")
+
     args = parser.parse_args()
 
 
@@ -205,6 +207,16 @@ def main():
         except subprocess.CalledProcessError as err:
             print  >> sys.stderr, str(err.output)
             sys.exit(1)
+
+    if args.prnt == 'yes':
+        cmd = 'python ' + bin+'/get_seq.py -a '+ args.output +'/assembly.cleaned.fasta -f ' + args.output+'/scaffolds_ITERATION_'+str(iter_num)+'.fasta -g ' + args.output+'/scaffolds_ITERATION_'+str(iter_num)+'.agp -p '+ args.output+'/scaffolds_iteration_'+str(iter_num)+'.p'
+        log.write(cmd+'\n')
+        try:
+            p = subprocess.check_output(cmd,shell=True)
+        except subprocess.CalledProcessError as err:
+            print >> sys.stderr, str(err.output)
+
+
     iter_num += 1
     scaffold_length = {}
     with open(args.output+'/scaffold_length_iteration_'+str(iter_num),'r') as f:
@@ -296,6 +308,16 @@ def main():
             except subprocess.CalledProcessError as err:
                 print  >> sys.stderr, str(err.output)
                 sys.exit(1)
+
+
+        if args.prnt == 'yes':
+           cmd = 'python ' + bin+'/get_seq.py -a '+ args.output +'/assembly.cleaned.fasta -f ' + args.output+'/scaffolds_ITERATION_'+str(iter_num)+'.fasta -g ' + args.output+'/scaffolds_ITERATION_'+str(iter_num)+'.agp -p '+ args.output+'/scaffolds_iteration_'+str(iter_num)+'.p'
+        log.write(cmd+'\n')
+        try:
+           p = subprocess.check_output(cmd,shell=True)
+        except subprocess.CalledProcessError as err:
+            print >> sys.stderr, str(err.output)
+
         scaffold_length = {}
         with open(args.output+'/scaffold_length_iteration_'+str(iter_num+1),'r') as f:
             for line in f:
