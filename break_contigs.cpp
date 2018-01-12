@@ -62,7 +62,7 @@ char* getCharExpr(string s)
         return a;
 }
 
-unordered_map<string,vector<long>> contig2breakpoints;
+unordered_map<string,vector<pair<long,pair<long,long>>>> contig2breakpoints;
 unordered_map<string,long> contig_length;
 void load_breakpoints(string file)
 {
@@ -72,14 +72,32 @@ void load_breakpoints(string file)
 	long pos;
 	while(getline(bfile,line))
 	{
-		vector<long> breaks;
+		vector<pair<long,pair<long,long>>> breaks;
 		istringstream iss(line);
 		iss >> contig;
-		while(iss >> pos)
+		vector<long>bps;
+        while(iss >> pos)
 		{
-			breaks.push_back(pos);
+            bps.push_back(pos);
+
+			//breaks.push_back(pos);
 			//cout<<pos<<endl;
 		}
+        for(int i = 0;i < bps.size();i++)
+        {
+            if(i == 0 && i+1 < bps.size())
+            {
+                breaks.push_back(make_pair(bps[i],make_pair(0,bps[i+1])));
+            }
+            if(i > 0 && i + 1 < bps.size())
+            {
+                breaks.push_back(make_pair(bps[i],make_pair(bps[i-1],bps[i+1])));
+            }
+            if(i == bps.size()-1)
+            {
+                breaks.push_back(make_pair(bps[i],make_pair(bps[i-1],contig_length[contig])));
+            }
+        }
 		contig2breakpoints[contig] = breaks;
 	}
 	bfile.close();
@@ -118,152 +136,24 @@ double inspect(int pos, vector<int>& count)
 		return low*1.0/total;
 	}
 }
-void get_MAD_complete(string contig, vector<int>& count)
+
+bool check_if_inside(string contig, long start, long end)
 {
-	if(contig2breakpoints.find(contig) == contig2breakpoints.end())
-	{
-		return;
-	}
-//	if(contig2breakpoints[contig].size() < 5)
-//	{
-//		cout<<"============================="<<endl;
-//		cout<<contig<<endl;
-//		for(int ind = 0; ind < contig2breakpoints[contig].size();ind++)
-//		{
-//			long pos = contig2breakpoints[contig][ind];
-//			cout<<"POS = "<<pos<<" RATIO = "<<inspect(pos,count)<<endl;
-//		}
-//	}
+    if(contig2breakpoints.find(contig) == contig2breakpoints.end())
+    {
+        return false;
+    }
+    vector<pair<long,pair<long,long>>> positions = contig2breakpoints[contig];
+    for(int i = 0;i < positions.size();i++)
+    {
+        if(start >= positions[i].second.first && end <= positions[i].second.second)
+        {
+            return true;
+        }
+    }
+    return false;
 
-//	cout<<"============================="<<endl;
-	double median = 0;
-	double mad = 0;
-	long sz = count.size();
-	vector<int> original = count;
-	double sum = std::accumulate(original.begin(), original.end(), 0.0);
-	double mean = sum / original.size();
-	std::vector<double> diff(original.size());
-	std::transform(original.begin(), original.end(), diff.begin(),
-	std::bind2nd(std::minus<double>(), mean));
-	double sq_sum = std::inner_product(diff.begin(), diff.end(), diff.begin(), 0.0);
-	double stdev = std::sqrt(sq_sum / original.size());
-
-	sort(count.begin(),count.end());
-
-	// ints = curr_part.size();
-	if(sz %2 == 0)
-	{
-		median = (count[sz/2] + count[sz/2-1])/2;
-	}
-	else
-	{
-		median = count[sz/2];
-	}
-	for(long i = 0;i < sz;i++)
-	{
-		count[i] = abs(count[i] - median);
-	}
-	sort(count.begin(),count.end());
-	mad = count[sz/2];
-
-	vector<int>join_coverage;
-
-//	cout<<"CONTIG "<<contig<<" MEAN = "<<mean<<" STD = "<<stdev<<" MEDIAN = "<<median<<" MAD = "<<mad<<endl;
-	for(int ind = 0; ind < contig2breakpoints[contig].size();ind++)
-	{
-		long pos = contig2breakpoints[contig][ind];
-		//cout<<"COVERAGE AT POSITION "<<pos <<" = "<<original[pos]<<endl;
-		join_coverage.push_back(original[pos]);
-	}
-	for(int i = 1; i < join_coverage.size() - 1; i++)
-	{
-		if(join_coverage[i] < join_coverage[i-1] && join_coverage[i] < join_coverage[i+1])
-		{
-			cout<<contig<<"\t"<<contig2breakpoints[contig][i]<<endl;
-		}
-	}
 }
-
-void get_MAD(string contig, vector<int>& count)
-{
-	if(contig2breakpoints.find(contig) == contig2breakpoints.end())
-	{
-		return;
-	}
-	double median = 0;
-	double mad = 0;
-	long sz = count.size();
-	vector<int> original = count;
-	long check_index = 0;
-	//cout<<"SIZE = "<<sz<<endl;
-	
-	for(int ind = 0; ind < contig2breakpoints[contig].size();ind++)
-	{
-		long bound = 5000000;
-		long win_size;
-		/*
-		Check if window size is smaller than 5 mb
-		*/
-		long pos = contig2breakpoints[contig][ind];
-		if(pos < bound/2)
-		{
-			win_size = pos;
-			//cout<<"LOWER"<<endl;
-		}
-		else if(sz - pos < bound/2)
-			{
-				win_size = sz - pos -1;
-				//cout<<"UPPER"<<endl;
-			}
-			else
-			{
-				//cout<<"MID"<<endl;
-			}
-		long start = pos - win_size;
-		long end = pos + win_size;
-		//cout<<"WINDOW Size = "<<start<<" - "<<end<<endl; 
-		vector<int> curr_part = slice(count,start,end);
-
-		//COmpute mean and stdev
-		double sum = std::accumulate(curr_part.begin(), curr_part.end(), 0.0);
-		double mean = sum / curr_part.size();
-		std::vector<double> diff(curr_part.size());
-		std::transform(curr_part.begin(), curr_part.end(), diff.begin(),
-        std::bind2nd(std::minus<double>(), mean));
-		double sq_sum = std::inner_product(diff.begin(), diff.end(), diff.begin(), 0.0);
-		double stdev = std::sqrt(sq_sum / curr_part.size());
-
-		//compute median and MAD
-		sort(curr_part.begin(),curr_part.end());
-
-		int curr_size = curr_part.size();
-		if(curr_size  %2 == 0)
-		{
-			median = (curr_part[curr_size/2] + curr_part[curr_size/2-1])/2;
-		}
-		else
-		{
-			median = curr_part[curr_size/2];
-		}
-		for(long i = 0;i < curr_size;i++)
-		{
-			curr_part[i] = abs(curr_part[i] - median);
-		}
-		sort(curr_part.begin(),curr_part.end());
-		mad = curr_part[curr_size/2];
-		cout<<"MEDIAN = "<<median<<", MAD = "<<mad<<" MEAN = "<<mean<<" STDEV = "<<stdev<<endl;
-		if(original[pos] < median - 3*mad)
-		{
-			cout<<"CHECKING SCAFFOLD "<<contig<<" AT POSITION "<<pos<<" YES; COV = "<<original[pos]<<endl;;
-		}
-		else
-		{
-			cout<<"CHECKING SCAFFOLD "<<contig<<" AT POSITION "<<pos<<" NO; COV = "<<original[pos]<<endl;;
-		}
-
-	}
-}
-
 
 int main(int argc, char *argv[])
 {
@@ -309,8 +199,10 @@ int main(int argc, char *argv[])
 		istringstream iss(line);
 		if(!(iss >> contig >> start >> end >> read))
 			break;
-		// if(contig == "000008F")
-		// {
+		//if(contig != "scaffold_0")
+		//{
+        //    continue;
+        //}
 		if(contig_length[contig] < 1000000)
 		{
 			prev_contig = contig;
@@ -331,8 +223,11 @@ int main(int argc, char *argv[])
 			if(prev_end <= start)
 			{
 				//cout<<"here"<<endl;
-				contig2coverage[contig].at(prev_start) += 1;
-				contig2coverage[contig].at(end+1) -= 1;
+                if(check_if_inside(contig,prev_start,end+1))               
+                {
+                    contig2coverage[contig].at(prev_start) += 1;
+				    contig2coverage[contig].at(end+1) -= 1;
+                }
 				// cout<<contig2coverage[contig].at(prev_start)<<endl;
 			}
 			//contig2coverage[contig] = cov;
@@ -347,52 +242,98 @@ int main(int argc, char *argv[])
 
     int total_breakpoints = 0;
     int suspicious_breakpoints = 0;
-
+    
 	for(unordered_map<string,vector<int> > :: iterator it = contig2coverage.begin(); it != contig2coverage.end();++it)
 	{
-		vector<int> cov = contig2coverage[it->first];
-		for(long i = 1; i< cov.size();i++)
-		{
-			cov[i] += cov[i-1];
-			//cout<<(int)cov[i]<<endl;
-		}
-		contig2coverage[it->first] = cov;
-		//get_MAD_complete(it->first,cov);
+		//cout<<"Testing contig " << it->first<<endl;
         string contig = it->first;
-        if(contig2breakpoints.find(contig) != contig2breakpoints.end())
+        if (contig2breakpoints.find(it->first) != contig2breakpoints.end())
         {
             cout<<contig;
-            vector<long> breakpoints = contig2breakpoints[contig];
-            total_breakpoints += breakpoints.size();
-            for(int k = 0; k < breakpoints.size();k++)
-            {
-                //if(iteration < 4)
-                //{
-                    if(k >= 1 && k < breakpoints.size() -1)
-                    {
-                        if(cov[breakpoints[k-1]] > cov[breakpoints[k]] && cov[breakpoints[k+1]] > cov[breakpoints[k]])
-                        {
-                            cout<<"\t"<<breakpoints[k];
-                            suspicious_breakpoints += 1;
-                        }
+            vector<pair<long,pair<long,long>>> positions = contig2breakpoints[it->first];
             
-                    }
+            for(int i = 0;i < positions.size();i++)
+            {
+                //cout<<"testing "<<i<<endl;
+                long misasm_loc = positions[i].first;
+                long start = positions[i].second.first;
+                long end = positions[i].second.second;
+                long start_pos = start;
+                long end_pos = end;
+                vector<int> cov = contig2coverage[it->first];
+                vector<int> local_coverage;
+                vector<int>tmpcov(cov);
+                for(long j = start;j < end;j++)
+                {
+                    tmpcov[j] += tmpcov[j-1];
+                    local_coverage.push_back(tmpcov[j]);;
+                }
+               // ofstream covfile(to_string(i)+"_coverage.txt");
+                //for(long k = 0;k < local_coverage.size();k+=1000)
+                //{
+                //   covfile<<k<<"\t"<<local_coverage[k]<<endl;
                 //}
-               // else
-               // {
-               //     double fraction = inspect(breakpoints[k],cov);
-               //     if(fraction >= 0.3)
-               //     {
-               //         cout<<"\t"<<breakpoints[k];
-               //         suspicious_breakpoints += 1;
-               //         break;
-               //     }
-               // }
+                //covfile.close();
+                contig2coverage[it->first] = cov;
+                double average = accumulate(local_coverage.begin(),local_coverage.end(),0.0)/local_coverage.size();
+                //cout<<"average coverage = "<<average<<endl;
+                vector<long> misasm_pos;
+               for(int div = 5; div <= 15; div++)                                                                        
+               {
+                   double cutoff = average/div;                                                                         
+                   vector<int>delta;
+                   //cout<<"Cutoff = " << cutoff<<endl;
+                   for(long j = 0; j < local_coverage.size();j++)
+                   {
+                       if(local_coverage[j] < cutoff)
+                       {
+                           delta.push_back(5);
+                       }
+                       else
+                       {
+                           delta.push_back(-5); 
+                       }
+                   }
+                   long sz = delta.size();
+                   //cout<<"Running Kadane algorithm"<<endl;
+                   /*
+                    * Now find maximum sum subarray of delta with Kadane's algorithm
+                    */
+                   int max_so_far = -100000, max_ending_here = 0;
+                   long  start = sz/3, end = 2*sz/3,s = sz/3;
+                   for(long j = sz/3 ;j < 2*sz/3;j++)
+                   {
+                       max_ending_here += delta.at(j);
+                       if(max_so_far < max_ending_here)
+                       {
+                           max_so_far = max_ending_here;
+                           start = s;
+                           end = j;
+                       }
+                       if(max_ending_here < 0)
+                       {
+                           max_ending_here = 0;
+                           s = j + 1;
+                       }
+                   }
+                   //cout<<start<<"\t"<<end<<endl;
+                   if(misasm_loc >= start + start_pos && misasm_loc <= end+start_pos)
+                   {
+                       misasm_pos.push_back((start+end)/2);
+                   }
+                   //cout<<"Possible Misassembly with cutoff "<<cutoff<<" in "<<contig<<" at "<<start<<"\t"<<end<<endl;
+               }
+               //cout<<"size = "<<"\t"<<misasm_pos.size()<<endl;
+               if(misasm_pos.size() > 0)
+               {
+                   suspicious_breakpoints += 1;
+                   cout<<"\t"<<misasm_loc;
+               }
+               total_breakpoints += 1;
             }
             cout<<endl;
         }
-		//cout<<stat.first<<"\t"<<stat.second<<endl;
-	}
+    }
 	cout<<"Total Joins = "<<total_breakpoints<<endl;
     cout<<"Suspicious Joins = "<<suspicious_breakpoints<<endl;
     cout<<"Percent Suspicious Joins = "<<suspicious_breakpoints*100.0/total_breakpoints<<endl;
