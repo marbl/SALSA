@@ -228,9 +228,14 @@ int main(int argc, char* argv[])
 		if(e < 1)
 		{
 			cout<<line<<endl;
+            continue;
 		}
 		string u = a.substr(0,a.length()-2);
 		string v = b.substr(0,b.length()-2);
+        if(u[0] == 'K' || v[0] == 'K')
+        {
+            continue;
+        }
 
 		// Create things for Dijkstra
 		std::vector<Vertex> predecessorsFOW(boost::num_vertices(g)); // To store parents
@@ -252,16 +257,18 @@ int main(int argc, char* argv[])
 
 		long minpath = -1;
 		string ori;
-		double ratio;
-
+		double ratio = 0.1;
 		vector<string> orientations;
 		orientations.push_back("BB");
 		orientations.push_back("BE");
 		orientations.push_back("EB");
 		orientations.push_back("EE");
 		bool done = false;
-		for(int i = 0;i < orientations.size();i++)
+		bool printed = false;
+        bool inlimits = false;
+        for(int i = 0;i < orientations.size();i++)
 		{
+            printed = false;
 			string orientation = orientations[i];
 			string v1,v2;
 			if(orientation == "BB")
@@ -290,31 +297,40 @@ int main(int argc, char* argv[])
 				if(boost::edge(unitig2id[v1],unitig2id[v2],g).second)
 				{
 					//cout<<line<<endl;
-					added[u] = true;
+					//cout<<"EDGE exists"<<endl;
+                    added[u] = true;
 					added[v] = true;
 					cout<<u<<":"<<orientation[0]<<"\t"<<v<<":"<<orientation[1]<<"\t"<<c<<"\t"<<d<<"\t"<<e<<"\t"<<f<<"\t"<<x<<"\t"<<h<<endl;
 					done = true;
-					break;
+					printed = true;
+                    break;
 				}
 				else
 				{
 					
 					//string linkorient = string(a[a.length()-1]) + string(b[b.length()-1]);
 					//extract contig name
-					
+				    //cout<<"here"<<endl;	
 					long path_len;
 					if(orientation == "BB" || orientation == "BE")
 					{
 						path_len = distanceMapREV[unitig2id[v2]];
-					}
+					    //cout<<"PATH LENGTH = "<<path_len<<endl;
+                    }
 					else
 					{
 						path_len = distanceMapFOW[unitig2id[v2]];
+                        //cout<<"PATH LENGTH = "<<path_len<<endl;
 					}	
-					if(minpath < INT_MAX && minpath > INT_MIN)
+					if(path_len < INT_MAX && path_len > INT_MIN)
 					{
+                        //cout<<"in limits"<<endl;
+                        inlimits=true;
 						if(minpath == -1)
 						{
+                            //cout<<"setting"<<endl;
+                            //cout<<line<<endl;
+                            //cout<<orientation<<endl;
 							minpath = path_len;
 							ori = orientation;
 						}
@@ -331,23 +347,31 @@ int main(int argc, char* argv[])
 				}
 			}
 		}
-		// if(!done &&  minpath < INT_MAX && minpath > INT_MIN)
-		// {
+		//if(!done &&  minpath < INT_MAX && minpath > INT_MIN)
+		//{
 		// 	cout<<ratio<<"\t"<<minpath<<endl;
-		// }
+		//}
+        if(!inlimits)
+        {
+            continue;
+        }
 		if(ratio > 0 && ratio < 1 && minpath < INT_MAX && minpath > INT_MIN && !done)
 		{
 			//cout<<ratio<<"\t"<<minpath<<endl;
-			cout<<u+":"+ori[0]<<'\t'<<v+":"+ori[1]<<'\t'<<c<<"\t"<<d<<"\t"<<e<<"\t"<<f<<"\t"<<x<<"\t"<<h<<endl;
+			//cout<<"here"<<endl;
+            cout<<u+":"+ori[0]<<'\t'<<v+":"+ori[1]<<'\t'<<c<<"\t"<<d<<"\t"<<e<<"\t"<<f<<"\t"<<x<<"\t"<<h<<endl;
 			//cout << line << endl;
 			added[a] = true;
 			added[b] = true;
 		}
 		else
 		{
-			cout<<line<<endl;
-			added[a] = true;
-			added[b] = true;
+			if(!printed)
+            {
+                cout<<line<<endl;
+			    added[a] = true;
+			    added[b] = true;
+            }
 		}
 	}
 	
