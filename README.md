@@ -60,6 +60,8 @@ optional arguments:
 To start the scaffolding, first step is to map reads to the assembly. We recommend using BWA or BOWTIE2 aligner to map reads. The read mapping generates a `bam` file. SALSA requires `bed` file as the input. This can be done using the `bamToBed` command from the [Bedtools](http://bedtools.readthedocs.io/en/latest/) package. Also, SALSA requires bed file to be sored by the read name, rather than the alignment coordinates. Once you have bam file, you can run following commands to get the bam
 file needed as an input to SALSA.
 
+Since Hi-C reads and alignments contain experimental artifacts, the alignments needs some postprocessing. To align and postprocess the alignments, you can use the pipeline released by Arima Genomics which can be found here [ https://github.com/ArimaGenomics](https://github.com/ArimaGenomics).
+
 ```
 bamToBed -i alignment.bam > alignment.bed
 sort -k 4 alignment.bed > tmp && mv tmp alignment.bed
