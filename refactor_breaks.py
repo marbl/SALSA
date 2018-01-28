@@ -47,9 +47,10 @@ def update_bed(expanded_scaffold):
         path = expanded_scaffold[key]
         scaffold_length[key] = 0
         offset = 0
-        for i in xrange(0,len(path),2):
+        for i in xrange(0,len(path)-1,2):
             contig = path[i].split(':')[0]
             contig2scaffold[contig] = key
+            #print path[i],path[i+1]
             ori = path[i].split(':')[1] + path[i+1].split(':')[1]
             if ori == 'BE':
                 contig2info[contig] = (offset,'FOW')
