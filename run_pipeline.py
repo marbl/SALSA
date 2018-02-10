@@ -161,7 +161,7 @@ def main():
             print >> sys.stderr, str(err.output)
             sys.exit(1)
 
-    if args.gfa != 'abc' and not os.path.isfile(args.output+'/contig_links_scaled_sorted_iteration_1'):
+    if args.gfa != 'abc' and not os.path.isfile(args.output+'/tmp.links'):
         try:
             cmd = bin+'/correct_links -g ' + args.gfa + ' -l ' + args.output+'/contig_links_scaled_sorted_iteration_1 > ' + args.output+'/tmp.links'
             log.write(cmd+'\n')
@@ -298,7 +298,7 @@ def main():
 
         if not os.path.isfile(args.output+'/misasm_'+str(iter_num+1)+'.DONE'):
             try:
-                cmd = 'python '+bin+'/refactor_breaks.py -d ' + args.output + ' -i ' + str(iter_num+1)
+                cmd = 'python '+bin+'/refactor_breaks.py -d ' + args.output + ' -i ' + str(iter_num+1) + ' > '+args.output+'/misasm_'+str(iter_num+1)+'.log'
                 print cmd
                 log.write(cmd+'\n')
                 p = subprocess.check_output(cmd,shell=True)
@@ -311,12 +311,12 @@ def main():
 
 
         if args.prnt == 'yes':
-           cmd = 'python ' + bin+'/get_seq.py -a '+ args.output +'/assembly.cleaned.fasta -f ' + args.output+'/scaffolds_ITERATION_'+str(iter_num)+'.fasta -g ' + args.output+'/scaffolds_ITERATION_'+str(iter_num)+'.agp -p '+ args.output+'/scaffolds_iteration_'+str(iter_num)+'.p'
-        log.write(cmd+'\n')
-        try:
-           p = subprocess.check_output(cmd,shell=True)
-        except subprocess.CalledProcessError as err:
-            print >> sys.stderr, str(err.output)
+            cmd = 'python ' + bin+'/get_seq.py -a '+ args.output +'/assembly.cleaned.fasta -f ' + args.output+'/scaffolds_ITERATION_'+str(iter_num)+'.fasta -g ' + args.output+'/scaffolds_ITERATION_'+str(iter_num)+'.agp -p '+ args.output+'/scaffolds_iteration_'+str(iter_num)+'.p'
+            log.write(cmd+'\n')
+            try:
+                p = subprocess.check_output(cmd,shell=True)
+            except subprocess.CalledProcessError as err:
+                print >> sys.stderr, str(err.output)
 
         scaffold_length = {}
         with open(args.output+'/scaffold_length_iteration_'+str(iter_num+1),'r') as f:

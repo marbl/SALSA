@@ -81,23 +81,27 @@ void load_breakpoints(string file)
             bps.push_back(pos);
 
 			//breaks.push_back(pos);
-			//cout<<pos<<endl;
+            if(pos - 2000000 >=0  && pos + 2000000 <= contig_length[contig])
+            {
+		        breaks.push_back(make_pair(pos,make_pair(pos - 2000000, pos + 2000000)));
+            }
+            //cout<<pos<<endl;
 		}
-        for(int i = 0;i < bps.size();i++)
-        {
-            if(i == 0 && i+1 < bps.size())
-            {
-                breaks.push_back(make_pair(bps[i],make_pair(0,bps[i+1])));
-            }
-            if(i > 0 && i + 1 < bps.size())
-            {
-                breaks.push_back(make_pair(bps[i],make_pair(bps[i-1],bps[i+1])));
-            }
-            if(i == bps.size()-1)
-            {
-                breaks.push_back(make_pair(bps[i],make_pair(bps[i-1],contig_length[contig])));
-            }
-        }
+       // for(int i = 0;i < bps.size();i++)
+       // {
+       //     if(i == 0 && i+1 < bps.size())
+       //     {
+       //         breaks.push_back(make_pair(bps[i],make_pair(0,bps[i+1])));
+       //     }
+       //     if(i > 0 && i + 1 < bps.size())
+       //     {
+       //         breaks.push_back(make_pair(bps[i],make_pair(bps[i-1],bps[i+1])));
+       //     }
+       //     if(i == bps.size()-1)
+       //     {
+       //         breaks.push_back(make_pair(bps[i],make_pair(bps[i-1],contig_length[contig])));
+       //     }
+       // }
 		contig2breakpoints[contig] = breaks;
 	}
 	bfile.close();
@@ -324,7 +328,7 @@ int main(int argc, char *argv[])
                    //cout<<"Possible Misassembly with cutoff "<<cutoff<<" in "<<contig<<" at "<<start<<"\t"<<end<<endl;
                }
                //cout<<"size = "<<"\t"<<misasm_pos.size()<<endl;
-               if(misasm_pos.size() > 0)
+               if(misasm_pos.size() >= 8)
                {
                    suspicious_breakpoints += 1;
                    cout<<"\t"<<misasm_loc;
