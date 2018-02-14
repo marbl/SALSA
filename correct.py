@@ -43,15 +43,15 @@ contig2newseq = {}
 contig_id = 1
 for seq in input_seqs:
     if seq not in contig2breakpoints:
-        contig2new[seq] = 'contig_'+str(contig_id)
+        contig2new[seq] = seq
         contig2newseq['contig_'+str(contig_id)] = input_seqs[seq]
         contig_id += 1
     else:
         first = input_seqs[seq][:contig2breakpoints[seq]]
         second = input_seqs[seq][contig2breakpoints[seq]:]
-        first_id = 'contig_'+str(contig_id)
+        first_id = seq+'_1'
         contig_id += 1
-        second_id = 'contig_'+str(contig_id)
+        second_id = seq+'_2'
         contig_id += 1
         contig2new[seq] = [first_id,second_id]
         contig2newseq[first_id] = first
