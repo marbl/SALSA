@@ -9,7 +9,7 @@ To use the latest version, first run the following commands:
   make
 ```
 
-To run the code, you will need Python 2.7, [BOOST](http://www.boost.org/) libraries and [Networkx](https://networkx.github.io/).
+To run the code, you will need Python 2.7, [BOOST](http://www.boost.org/) libraries and [Networkx](https://networkx.github.io/)(version lower than 1.2).
 
 
 If you consider using this tool, please cite our publication which describes the methods used for scaffolding.
