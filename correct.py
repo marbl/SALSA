@@ -44,7 +44,7 @@ contig_id = 1
 for seq in input_seqs:
     if seq not in contig2breakpoints:
         contig2new[seq] = seq
-        contig2newseq['contig_'+str(contig_id)] = input_seqs[seq]
+        contig2newseq[seq] = input_seqs[seq]
         contig_id += 1
     else:
         first = input_seqs[seq][:contig2breakpoints[seq]]
