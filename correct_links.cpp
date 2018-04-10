@@ -362,6 +362,7 @@ int main(int argc, char* argv[])
             cout<<u+":"+ori[0]<<'\t'<<v+":"+ori[1]<<'\t'<<c<<"\t"<<d<<"\t"<<e<<"\t"<<f<<"\t"<<x<<"\t"<<h<<endl;
 			//cout << line << endl;
 			added[a] = true;
+            printed = true;
 			added[b] = true;
 		}
 		else
