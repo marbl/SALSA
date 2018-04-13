@@ -43,6 +43,7 @@ def main():
     parser.add_argument("-x",'--dup',help='File containing duplicated contig information',required=False,default='abc')
     parser.add_argument("-s",'--exp',help="Expected Genome size of the assembled genome",required=False,default=0)
     parser.add_argument("-m","--clean",help="Set this option to \"yes\" if you want to find misassemblies in input assembly",required=False,default="no")
+    parser.add_argument("-f","--filter",help="Filter bed file for contigs present in the assembly",required=False,default="no")
     parser.add_argument("-p","--prnt",help="Set this option to \"yes\" if you want to output the scaffolds sequence and agp file for each iteration", required=False,default="no")
 
     args = parser.parse_args()
@@ -73,7 +74,11 @@ def main():
 
     if not os.path.isfile(args.output+'/alignment_iteration_1.bed'):
         #os.system('cp '+args.bed+' '+args.output+'/alignment_iteration_1.bed')
-        os.symlink(os.path.abspath(args.bed),args.output+'/alignment_iteration_1.bed')
+        if args.filter == "yes":
+            os.system("cut -f 1 "+args.length+" | grep -v '>'  > "+args.output+"/contig_names.txt")
+            os.system("grep -f "+args.output+"/contig_names.txt -w  "+ args.bed+ " > "+args.output+"/alignment_iteration_1.bed")
+        else:
+            os.symlink(os.path.abspath(args.bed),args.output+'/alignment_iteration_1.bed')
         #cmd  = 'ln -s '+os.path.abspath(args.bed)+' '+args.output+'/alignment_iteration_1.bed'
         #try:
           #  p = subprocess.check_output(cmd, shell=True)
