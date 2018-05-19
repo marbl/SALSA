@@ -16,6 +16,7 @@ If you consider using this tool, please cite our publication which describes the
 
 Ghurye, J., Pop, M., Koren, S., Bickhart, D., & Chin, C. S. (2017). Scaffolding of long read assemblies using long range contact information. BMC genomics, 18(1), 527. [Link](https://bmcgenomics.biomedcentral.com/articles/10.1186/s12864-017-3879-z)
 
+Ghurye, J., Rhie, A., Walenz, B.P., Schmitt, A., Selvaraj, S., Pop, M., Phillippy, A.M. and Koren, S., 2018. Integrating Hi-C links with assembly graphs for chromosome-scale assembly. bioRxiv, p.261149 [Link](https://www.biorxiv.org/content/early/2018/02/07/261149)
 
 For any queries, please either ask on github issue page or send an email to Jay Ghurye (jayg@cs.umd.edu).
 ## How to run the code?
