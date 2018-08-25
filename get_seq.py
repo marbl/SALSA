@@ -28,7 +28,7 @@ parser.add_argument("-p","--map",help="pickle map of scaffolds")
 
 args = parser.parse_args()
 
-revcompl = lambda x: ''.join([{'A':'T','C':'G','G':'C','T':'A','N':'N','R':'N','M':'N','Y':'N','S':'N','W':'N','K':'N','a':'t','c':'g','g':'c','t':'a','n':'n',' ':'',}[B] for B in x][::-1])
+revcompl = lambda x: ''.join([{'A':'T','B':'N','C':'G','G':'C','T':'A','N':'N','R':'N','M':'N','Y':'N','S':'N','W':'N','K':'N','a':'t','c':'g','g':'c','t':'a','n':'n',' ':'',}[B] for B in x][::-1])
 scaff_map = pickle.load(open(args.map,'r'))
 
 contig_length = {}
@@ -39,13 +39,25 @@ for key in id2seq:
     id2seq[key] = id2seq[key]
     contig_length[key] = len(id2seq[key])
 
+#first sort scaffolds in decreasing order of length
+
+scaff2length = {}
+for scaffold in scaff_map:
+	path = scaff_map[scaffold]
+	length = 0
+	for i in xrange(0,len(path)-1,2):
+		length += contig_length[path[i].split(':')[0]]
+	scaff2length[scaffold] = length
+
+sorted_scaffolds = sorted(scaff2length.items(), key=lambda x: x[1],reverse=True)
 
 c_id = 1
 line = ""
 agp_output = open(args.agp,'w')
 ofile = open(args.scaffold,'w')
-for key in scaff_map:
+for key in sorted_scaffolds:
     #print 'scaffold_'+str(c_id) + '\t' + key
+    key = key[0]
     start = 1
     local_comp = 1
     #if len(scaff_map[key]) >= 4:
@@ -55,7 +67,7 @@ for key in scaff_map:
     #print c_id
     line = ''
     for i in range(0,len(path)-1,2):
-        line += str(key)
+        line += "scaffold_"+str(c_id)
         line += '\t'
         line += str(start)
         line += str('\t')
@@ -102,7 +114,7 @@ for key in scaff_map:
     # recs.append(rec)
     # print c_id
     chunks = [curr_contig[i:i+80] for i in xrange(0,len(curr_contig),80)]
-    ofile.write('>'+key+'\n')
+    ofile.write('>scaffold_'+str(c_id)+'\n')
     for chunk in chunks:
         ofile.write(chunk+'\n')
     c_id += 1
