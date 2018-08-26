@@ -100,7 +100,7 @@ for key in sorted_scaffolds:
             for j in range(0,500):
                 curr_contig += 'N'
             line = ""
-            line += str(key)+'\t'
+            line += "scaffold_"+str(c_id)+'\t'
             line += str(start) +'\t'
             end = 500 + start - 1
             line += str(end) + '\t'
