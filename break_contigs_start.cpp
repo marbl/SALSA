@@ -273,9 +273,12 @@ int main(int argc, char *argv[])
 	//p.add<string>("breakpoints", 'b', "breakpoints", true, "");
 	p.add<string>("contiglen", 'l', "length of contigs", true, "");
 	//p.add<int>("iteration",'i',"Iteration number",true,0);
+    p.add<int>("min_size",'s',"Minimum mate pair separation for error findng",true,0);
     p.parse_check(argc, argv);	
 	string line;
 	ifstream lenfile(getCharExpr(p.get<string>("contiglen")));
+    int separation = p.get<int>("min_size");
+    unordered_map<string,int> contig2cutoff;
     while(getline(lenfile,line))
 	{
 		istringstream iss(line);
@@ -283,6 +286,7 @@ int main(int argc, char *argv[])
 		long n;
 		iss >> a >> n;
 		contig_length[a] = n;
+        contig2cutoff[a] = n/10;
 	}
     //int iteration = p.get<int>("iteration");
 	lenfile.close();
@@ -359,8 +363,11 @@ int main(int argc, char *argv[])
            }
            if(span_start >= 0 && span_end < contig_length[contig])
            {
-                contig2coverage[contig].at(span_start) += 1; 
-                contig2coverage[contig].at(span_end+1) -= 1;
+                if(span_end - span_start <= contig2cutoff[contig])
+                {
+                    contig2coverage[contig].at(span_start) += 1; 
+                    contig2coverage[contig].at(span_end+1) -= 1;
+                }
 			
            } //contig2coverage[contig] = cov;
 		}

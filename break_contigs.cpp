@@ -165,18 +165,22 @@ int main(int argc, char *argv[])
 	p.add<string>("alignment", 'a', "bed file for alignment", true, "");
 	//p.add<string>("outputdir", 'd', "coordinate output file", true, "");
 	p.add<string>("breakpoints", 'b', "breakpoints", true, "");
+    p.add<int>("min_size",'s',"Minimum mate pair separation for error findng",true,0);
 	p.add<string>("contiglen", 'l', "length of contigs", true, "");
 	p.add<int>("iteration",'i',"Iteration number",true,0);
     p.parse_check(argc, argv);	
 	string line;
 	ifstream lenfile(getCharExpr(p.get<string>("contiglen")));
-	while(getline(lenfile,line))
+    int separation = p.get<int>("min_size");
+	unordered_map<string,int> contig2cutoff;
+    while(getline(lenfile,line))
 	{
 		istringstream iss(line);
 		string a;
 		long n;
 		iss >> a >> n;
 		contig_length[a] = n;
+        contig2cutoff[a] = n/10;
 	}
     int iteration = p.get<int>("iteration");
 	lenfile.close();
@@ -185,7 +189,7 @@ int main(int argc, char *argv[])
 	ifstream bedfile(getCharExpr(p.get<string>("alignment")));
 	
 	unordered_map<string,vector<int> > contig2coverage;
-	string prev_line = "";
+    string prev_line = "";
 	string prev_contig="";
 	long prev_start=-1;
 	long prev_end=-1;
@@ -229,8 +233,11 @@ int main(int argc, char *argv[])
 				//cout<<"here"<<endl;
                 if(check_if_inside(contig,prev_start,end+1))               
                 {
-                    contig2coverage[contig].at(prev_start) += 1;
-				    contig2coverage[contig].at(end+1) -= 1;
+                    if(end - prev_start <= contig2cutoff[contig])
+                    {
+                        contig2coverage[contig].at(prev_start) += 1;
+				        contig2coverage[contig].at(end+1) -= 1;
+                    }
                 }
 				// cout<<contig2coverage[contig].at(prev_start)<<endl;
 			}

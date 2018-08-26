@@ -36,13 +36,14 @@ def main():
     parser.add_argument('-o','--output',help='Output directory to put results',required=False,default='SALSA_output')
     parser.add_argument('-c','--cutoff',help='Minimum contig length to scaffold, default=1000',required=False,default=1000)
     parser.add_argument('-g','--gfa',help='GFA file for assembly',required=False,default='abc')
-    parser.add_argument('-u','--unitigs',help='The tiling of unitigs to contigs in bed format',required=False,default='abc')
-    parser.add_argument('-t','--tenx',help='10x links tab separated file, sorted by last columnls',required=False,default='abc')
+    #parser.add_argument('-u','--unitigs',help='The tiling of unitigs to contigs in bed format',required=False,default='abc')
+    #parser.add_argument('-t','--tenx',help='10x links tab separated file, sorted by last columnls',required=False,default='abc')
     parser.add_argument('-e','--enzyme',help='Restriction Enzyme used for experiment',required=False,default='AAGCTT')
     parser.add_argument('-i','--iter',help='Number of iterations to run, default = 3',required=False,default=3)
     parser.add_argument("-x",'--dup',help='File containing duplicated contig information',required=False,default='abc')
     parser.add_argument("-s",'--exp',help="Expected Genome size of the assembled genome",required=False,default=0)
-    parser.add_argument("-m","--clean",help="Set this option to \"yes\" if you want to find misassemblies in input assembly",required=False,default="no")
+    parser.add_argument("-m","--clean",help="Set this option to \"yes\" if you want to find misassemblies in input assembly",required=False,default="yes")
+    #parser.add_argument("-d","--dist",help="Maximum distance between pairs to consider for misassembly detection",required=False,default=2000000)
     parser.add_argument("-f","--filter",help="Filter bed file for contigs present in the assembly",required=False,default="no")
     parser.add_argument("-p","--prnt",help="Set this option to \"yes\" if you want to output the scaffolds sequence and agp file for each iteration", required=False,default="no")
 
@@ -89,7 +90,7 @@ def main():
     os.system('ln -s ' + os.path.abspath(args.assembly) + ' '+args.output+'/assembly.cleaned.fasta')
 
     if args.clean == 'yes':
-       cmd = bin+'/break_contigs_start -a ' + args.output+'/alignment_iteration_1.bed -l ' + args.output+'/scaffold_length_iteration_1 > ' + args.output+'/input_breaks'
+       cmd = bin+'/break_contigs_start -a ' + args.output+'/alignment_iteration_1.bed -l ' + args.output+'/scaffold_length_iteration_1 > ' + args.output+'/input_breaks -s 100'
        log.write(cmd)
        try:
            p = subprocess.check_output(cmd,shell=True)
@@ -180,7 +181,7 @@ def main():
 
     if not os.path.isfile(args.output+'/scaffolds_iteration_1.p'):
         try:
-            cmd = 'python '+bin+'/layout_unitigs.py -x '+args.gfa + ' -u '+args.unitigs+' -t '+args.tenx+' -l '+args.output+'/contig_links_scaled_sorted_iteration_'+str(iter_num) +' -c ' +str(args.cutoff)+' -i 1 -d '+args.output
+            cmd = 'python '+bin+'/layout_unitigs.py -x '+args.gfa + ' -l '+args.output+'/contig_links_scaled_sorted_iteration_'+str(iter_num) +' -c ' +str(args.cutoff)+' -i 1 -d '+args.output
             log.write(cmd+'\n')
             print cmd
             p = subprocess.check_output(cmd,shell=True)
@@ -192,7 +193,7 @@ def main():
             sys.exit(1)
     if not os.path.isfile(args.output+'/misasm_iteration_'+str(iter_num+1)+'.report'):
         try:
-            cmd = bin+'/break_contigs -a ' + args.output+'/alignment_iteration_'+str(iter_num+1)+'.bed -b ' + args.output+'/breakpoints_iteration_'+str(iter_num+1)+'.txt -l '+ args.output+'/scaffold_length_iteration_'+str(iter_num+1) + ' -i '+str(iter_num+1)+' > ' + args.output+'/misasm_iteration_'+str(iter_num+1)+'.report'
+            cmd = bin+'/break_contigs -a ' + args.output+'/alignment_iteration_'+str(iter_num+1)+'.bed -b ' + args.output+'/breakpoints_iteration_'+str(iter_num+1)+'.txt -l '+ args.output+'/scaffold_length_iteration_'+str(iter_num+1) + ' -i '+str(iter_num+1)+' -s 100   > ' + args.output+'/misasm_iteration_'+str(iter_num+1)+'.report'
             p = subprocess.check_output(cmd,shell=True)
             print cmd
             log.write(cmd+'\n')
@@ -279,7 +280,7 @@ def main():
 
         if not os.path.isfile(args.output+'/scaffolds_iteration_'+str(iter_num)+'.p'):
             try:
-                cmd = 'python '+bin+'/layout_unitigs.py -x abc -u '+args.unitigs+' -t '+args.tenx+' -l '+args.output+'/contig_links_scaled_sorted_iteration_'+str(iter_num) +' -c ' +str(args.cutoff)+' -i '+str(iter_num)+' -d '+args.output
+                cmd = 'python '+bin+'/layout_unitigs.py -x abc -l '+args.output+'/contig_links_scaled_sorted_iteration_'+str(iter_num) +' -c ' +str(args.cutoff)+' -i '+str(iter_num)+' -d '+args.output
                 print cmd
                 log.write(cmd+'\n')
                 p = subprocess.check_output(cmd,shell=True)
@@ -293,7 +294,7 @@ def main():
 
         if not os.path.isfile(args.output+'/misasm_iteration_'+str(iter_num+1)+'.report'):
             try:
-                cmd = bin+'/break_contigs -a ' + args.output+'/alignment_iteration_'+str(iter_num+1)+'.bed -b ' + args.output+'/breakpoints_iteration_'+str(iter_num+1)+'.txt -l '+ args.output+'/scaffold_length_iteration_'+str(iter_num+1) + ' -i '+str(iter_num+1)+' > ' + args.output+'/misasm_iteration_'+str(iter_num+1)+'.report'
+                cmd = bin+'/break_contigs -a ' + args.output+'/alignment_iteration_'+str(iter_num+1)+'.bed -b ' + args.output+'/breakpoints_iteration_'+str(iter_num+1)+'.txt -l '+ args.output+'/scaffold_length_iteration_'+str(iter_num+1) + ' -i '+str(iter_num+1)+' -s 100  > ' + args.output+'/misasm_iteration_'+str(iter_num+1)+'.report'
                 print cmd
                 log.write(cmd+'\n')
                 p = subprocess.check_output(cmd,shell=True)
@@ -335,6 +336,13 @@ def main():
                 log.write(cmd+'\n')
                 os.system(cmd)
                 sys.exit(0)
+
+
+        if iter_num - 1 == int(args.iter):
+            cmd ='python '+bin+'/get_seq.py -a '+ args.output + '/assembly.cleaned.fasta -f ' + args.output+'/scaffolds_FINAL.fasta -g ' + args.output+'/scaffolds_FINAL.agp -p '+args.output+'/scaffolds_iteration_'+str(args.iter)+'.p'
+            log.write(cmd+'\n')
+            os.system(cmd)
+            sys.exit(0)
 
         iter_num += 1
 
