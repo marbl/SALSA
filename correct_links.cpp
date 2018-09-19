@@ -42,11 +42,12 @@ typedef boost::iterator_property_map < Weight*, IndexMap, Weight, Weight& > Dist
 std::vector<std::string> split(std::string const & s, size_t count)
 {
   vector<string> ret;
+  
   for(int i = 0;i < s.length();i+=count)
   {
     ret.push_back(s.substr(i,count));
   }
-return ret;
+    return ret;
 }
 
 
@@ -98,38 +99,6 @@ int main(int argc, char* argv[])
 		exit(EXIT_FAILURE);
 	}
 
-	//unordered_map<string,string> sequences = read_fasta(getCharExpr(assembly));
-
-	/*
-	First read the mappings and store them for each contig. Mapping is stored as a pair of (starting_pos,unitig-name)
-	*/
-	// unordered_map<string,vector<pair<pair<int,int>,string> > > contig2unitig;
-	// ifstream mapping(getCharExpr(unitig_mapping));
-	// string line;
-	// while(getline(mapping,line))
-	// {
-	// 	int a,b,c,d,e,f;
-	// 	double g,j,k;
-	// 	int h,i;
-	// 	string contig,unitig;
-	// 	istringstream iss(line);
-	// 	//cout<<line<<endl;
-	// 	if(!(iss >> a >> b >> c >> d >> e >>f >> g >> h >> i >> j >> k >> contig >> unitig))
-	// 		break;
-	// 	if(contig2unitig.find(contig) == contig2unitig.end())
-	// 	{
-	// 		vector<pair<pair<int,int>,string> > val;
-	// 		contig2unitig[contig] = val;
-	// 	}
-	// 	contig2unitig[contig].push_back(make_pair(make_pair(a,b),unitig));
-	// }
-	// mapping.close();
-
-
-	/*
-	Now load links. Store them as a boost graph.
-	*/
-	//cout<<"loading links now"<<endl;
 	unordered_map<string,int> unitig2id;
 	unordered_map<int,string> id2unitig;
 	int id = 0;
@@ -205,9 +174,9 @@ int main(int argc, char* argv[])
 		}
 	}	
 	edges.close();
-	// cout<<"Done loading links"<<endl;
-	// cout<<"Number of Nodes = "<<boost::num_vertices(g)<<endl;
-	// cout<<"Number of Edges = "<<boost::num_edges(g)<<endl;
+	cerr<<"Done loading GFA file"<<endl;
+	cerr<<"Number of Nodes = "<<boost::num_vertices(g)<<endl;
+	cerr<<"Number of Edges = "<<boost::num_edges(g)<<endl;
 
 
 	/*
@@ -215,9 +184,8 @@ int main(int argc, char* argv[])
 	Also, process only those shortest path queries for which no link is added before.
 	This would reduce tons of computation time
 	*/
-	// ofstream hiingraph("hi_in_graph.txt");
-	// ofstream graphinhic("graph_in_hic.txt");
-	unordered_map<string,bool> added;
+	
+    unordered_map<string,bool> added;
 	ifstream hic(getCharExpr(hic_links));
 	while(getline(hic,line))
 	{
@@ -232,11 +200,11 @@ int main(int argc, char* argv[])
 		}
 		string u = a.substr(0,a.length()-2);
 		string v = b.substr(0,b.length()-2);
-        if(u[0] == 'K' || v[0] == 'K')
+        if(unitig2id.find(u+":FOW") == unitig2id.end() && unitig2id.find(u+":REV") == unitig2id.end() && unitig2id.find(v+":FOW") == unitig2id.end() && unitig2id.find(v+":REV") == unitig2id.end())
         {
+            cout<<line<<endl;
             continue;
         }
-
 		// Create things for Dijkstra
 		std::vector<Vertex> predecessorsFOW(boost::num_vertices(g)); // To store parents
 		std::vector<Weight> distancesFOW(boost::num_vertices(g)); // To store distances
@@ -307,7 +275,7 @@ int main(int argc, char* argv[])
 				}
 				else
 				{
-					
+					//cout<<"here"<<endl;
 					//string linkorient = string(a[a.length()-1]) + string(b[b.length()-1]);
 					//extract contig name
 				    //cout<<"here"<<endl;	
@@ -324,7 +292,7 @@ int main(int argc, char* argv[])
 					}	
 					if(path_len < INT_MAX && path_len > INT_MIN)
 					{
-                        //cout<<"in limits"<<endl;
+                        //cout<<"Path Length = "<<path_len<<endl;
                         inlimits=true;
 						if(minpath == -1)
 						{
@@ -358,15 +326,16 @@ int main(int argc, char* argv[])
 		if(ratio > 0 && ratio < 1 && minpath < INT_MAX && minpath > INT_MIN && !done)
 		{
 			//cout<<ratio<<"\t"<<minpath<<endl;
-			//cout<<"here"<<endl;
+			//cout<<"Where we found the paths in graph"<<endl;
             cout<<u+":"+ori[0]<<'\t'<<v+":"+ori[1]<<'\t'<<c<<"\t"<<d<<"\t"<<e<<"\t"<<f<<"\t"<<x<<"\t"<<h<<endl;
-			//cout << line << endl;
+		    //cout << line << endl;
 			added[a] = true;
             printed = true;
 			added[b] = true;
 		}
 		else
 		{
+            //cout<<"here"<<endl;
 			if(!printed)
             {
                 cout<<line<<endl;
@@ -374,6 +343,7 @@ int main(int argc, char* argv[])
 			    added[b] = true;
             }
 		}
+        //cout<<"======================="<<endl;
 	}
 	
 	// BGL_FORALL_VERTICES(v, g, Graph)
