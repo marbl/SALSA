@@ -54,9 +54,9 @@ def update_bed(expanded_scaffold):
             contig2scaffold[contig] = key
             ori = path[i].split(':')[1] + path[i+1].split(':')[1]
             if ori == 'BE':
-                contig2info[contig] = (offset,'FOW')
+                contig2info[contig] = (offset,offset+unitig_length[contig],'FOW')
             else:
-                contig2info[contig] = (offset,'REV')
+                contig2info[contig] = (offset,offset+unitig_length[contig],'REV')
             offset += unitig_length[contig]
             scaffold_length[key] += unitig_length[contig]
 
@@ -75,6 +75,27 @@ def update_bed(expanded_scaffold):
                 contig = path[i].split(':')[0]
                 contig2scaffold[contig] = key
                 left,right = re_counts[contig]
+                midpoint = length/2
+                curr_contig_start = contig2info[contig][0]
+                curr_contig_end = contig2info[contig][1]
+                curr_contig_ori = contig2info[contig][2]
+                if curr_contig_end <= midpoint:
+                    s_left += (left+right)
+                if curr_contig_start >= midpoint:
+                    s_right += (left+right)
+
+                if curr_contig_start <= midpoint and curr_contig_end >= midpoint:
+                    left_part = midpoint - curr_contig_start
+                    right_part = curr_contig_end - midpoint
+                    if curr_contig_ori == "FOW":
+                        s_left += (right+left)*left_part/unitig_length[contig]
+                        s_right += (right+left)*right_part/unitig_length[contig]
+                    else:
+                        s_left += (right+left)*right_part/unitig_length[contig]
+                        s_right += (right+left)*left_part/unitig_length[contig]
+
+
+                '''
                 if offset <= length/2 and i+2 < len(path):
                     if contig2info[path[i+2].split(':')[0]][0] <= length/2:
                         s_left += (left + right)
@@ -96,6 +117,7 @@ def update_bed(expanded_scaffold):
                     s_right += (left+right)
                 offset += unitig_length[contig]
                 #scaffold_length[key] += contig_length[contig]
+                '''
             scaffold_re[key] = (s_left,s_right)
 
     o_lines = ""

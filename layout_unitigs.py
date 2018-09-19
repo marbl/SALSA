@@ -234,14 +234,7 @@ Load the unitig tiling and 10x graphs if possible.
 unitig_graph = nx.DiGraph()
 tenx_graph = nx.Graph()
 
-if args.unitigs != 'abc':
-    unitig_graph = load_unitig_mapping()
 
-'''
-Load tenx graph this way only if it is a higher iteration
-'''
-if args.tenx != 'abc' and iteration > 1:
-    tenx_graph = load_tenx_graph(50)
 
 
 
@@ -337,7 +330,7 @@ def load_tenx_links():
 
 '''
 This function loads unitig links
-'''
+
 def load_unitig_links():
     if iteration == 1:
         if args.unitigs != 'abc':
@@ -364,6 +357,8 @@ def load_unitig_links():
                     scaffold_2 = contig2scaffold[contig_2]
                     print 'testing'
                     test_edge(previous_scaffolds[scaffold_1],previous_scaffolds[scaffold_2],tenx_graph,'unitig')
+
+'''
 
 
 def load_unitigs_first():
@@ -568,7 +563,7 @@ def generate_scaffold_graph():
             #     print "UNUSED "+ line
                     contigs.add(c1)
                     contigs.add(c2)
-    print >> sys.stderr,  'Finished loading Hi-C links, Loading unitig links now..'
+    #print >> sys.stderr,  'Finished loading Hi-C links, Loading unitig links now..'
 
     '''
     Now try to add 10x and unitig links to the graph. Note that current preference is
@@ -585,9 +580,6 @@ def generate_scaffold_graph():
 
     print >> sys.stderr, 'Hybrid scaffold graph loaded, nodes = ' + str(len(G.nodes())) + ' edges = ' + str(len(G.edges()))
     print >> sys.stderr, 'Hi-C implied edges = ' + str(hic_edges)
-    print >> sys.stderr, 'Unitig tiling implied edges = ' + str(tiling_edges)
-    print >> sys.stderr, 'Assembly graph implied edges = ' + str(gfa_edges)
-    print >> sys.stderr, '10x implied edges = ' + str(tenx_links)
 
 
 '''
@@ -734,14 +726,15 @@ def update_bed(expanded_scaffold):
             contig2scaffold[contig] = key
             ori = path[i].split(':')[1] + path[i+1].split(':')[1]
             if ori == 'BE':
-                contig2info[contig] = (offset,'FOW')
+                contig2info[contig] = (offset,offset+contig_length[contig],'FOW')
             else:
-                contig2info[contig] = (offset,'REV')
+                contig2info[contig] = (offset,offset+contig_length[contig],'REV')
             offset += contig_length[contig]
             scaffold_length[key] += contig_length[contig]
 
     scaffold_re = {}
     for key in expanded_scaffold:
+        print key
         path = expanded_scaffold[key]
         length = scaffold_length[key]
         offset = 0
@@ -755,6 +748,36 @@ def update_bed(expanded_scaffold):
                 contig = path[i].split(':')[0]
                 contig2scaffold[contig] = key
                 left,right = re_counts[contig]
+                midpoint = length/2
+                curr_contig_start = contig2info[contig][0]
+                curr_contig_end = contig2info[contig][1]
+                curr_contig_ori = contig2info[contig][2]
+                #print contig
+                #print curr_contig_start
+                #print curr_contig_end
+                #print curr_contig_ori
+                if curr_contig_end <= midpoint:
+                    s_left += (left+right)
+                if curr_contig_start >= midpoint:
+                    s_right += (left+right)
+
+                if curr_contig_start <= midpoint and curr_contig_end >= midpoint:
+                    left_part = midpoint - curr_contig_start
+                    right_part = curr_contig_end - midpoint
+                    #print "Left part = " + str(left_part)
+                    #print "Right part = " + str(right_part)
+                    if curr_contig_ori == "FOW":
+                        s_left += (left+right)*left_part/contig_length[contig]
+                        s_right += (left+right)*right_part/contig_length[contig]
+                        #print "Left RE = " + str(left*left_part/contig_length[contig])
+                        #print "Right RE = " + str(right*right_part/contig_length[contig])
+                    else:
+                        s_left += (left+right)*right_part/contig_length[contig]
+                        s_right += (right+left)*left_part/contig_length[contig]
+                        #print "Right RE = " + str(left_part/contig_length[contig])
+                        #print "Left RE = " + str(right*right_part/contig_length[contig])
+
+                '''
                 if offset <= length/2 and i+2 < len(path):
                     if contig2info[path[i+2].split(':')[0]][0] <= length/2:
                         s_left += (left + right)
@@ -776,7 +799,10 @@ def update_bed(expanded_scaffold):
                     s_right += (left+right)
                 offset += contig_length[contig]
                 #scaffold_length[key] += contig_length[contig]
+                '''
+            #print key+"\t"+str(s_left)+"\t"+str(s_right)
             scaffold_re[key] = (s_left,s_right)
+            #print "=============================="
 
     o_lines = ""
     count = 0
@@ -840,7 +866,6 @@ def update_bed(expanded_scaffold):
     for key in scaffold_re:
         re_out.write(key+'\t'+str(scaffold_re[key][0])+'\t'+str(scaffold_re[key][1])+'\n')
     re_out.close()
-
 
 
 
