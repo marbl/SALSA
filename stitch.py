@@ -46,9 +46,10 @@ unitig2coord = {}
 with open(args.bed,'r') as f:
     for line in f:
         attrs = line.split()
-        contig = 'tig'+attrs[0][3:]
+        #contig = 'tig'+attrs[0][3:]
+        contig = attrs[0]
         unitig = attrs[3]
-        unitig = 'tig'+attrs[3][3:]
+        #unitig = 'tig'+attrs[3][3:]
         unitig2contig[unitig] = contig
         if contig not in contig2path:
             contig2path[contig] = []
