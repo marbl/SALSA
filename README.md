@@ -79,7 +79,7 @@ This will generate `contigs.fasta.fai` as an input for `-l` option. You can use 
 
 ### Restriction Enzyme input
 
-Hi-C experiments can use different restriction enzymes. We use the enzyme frequency in contigs to normalize the Hi-C interaction frequency. You will need to specify which enzyme was used for Hi-C experiment while running SALSA in `-e` option. If multiple enzymes were used, they can specified by separating with comma without space, like `-e GATC,AAGCTT`.
+Hi-C experiments can use different restriction enzymes. We use the enzyme frequency in contigs to normalize the Hi-C interaction frequency. You will need to specify which enzyme was used for Hi-C experiment while running SALSA in `-e` option. If multiple enzymes were used, they can specified by separating with comma without space, like `-e GATC,AAGCTT`. Note that you need to specify the actual sequence of the cutting site for a restriction enzyme and not the enzyme name. For example, if you use `MboI` in the Hi-C protocol ,then you would specify it as `-e GATC`.
 
 
 ### 1) I have contig sequences and the alignment bam file
