@@ -423,8 +423,8 @@ int main(int argc, char *argv[])
              * Now find maximum sum subarray of delta with Kadane's algorithm
              */
             int max_so_far = -100000, max_ending_here = 0;
-            long  start = sz/1000, end = sz/1000,s = sz/1000;
-            for(long i = sz/1000 ;i < 9*sz/10;i++)
+            long  start = sz/100, end = sz/100,s = sz/100;
+            for(long i = sz/100 ;i < 9*sz/10;i++)
             {
                 max_ending_here += delta.at(i);
                 if(max_so_far < max_ending_here)
@@ -439,7 +439,7 @@ int main(int argc, char *argv[])
                     s = i + 1;
                 }
             }
-            if(start >= sz/1000 + 5000 && end <= 9*sz/10 - 5000)
+            if(start >= sz/100 + 5000 && end <= 9*sz/10 - 5000)
             {
                 positions.push_back((start+end)/2);
             }
