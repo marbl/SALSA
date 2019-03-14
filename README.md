@@ -1,5 +1,6 @@
 # SALSA: A tool to scaffold long read assemblies with Hi-C 
 
+## New: Support added to SALSA to convert scaffolds to .hic format for visualization. You can load this file to Juicebox to visualize HiC contact map. 
 
 This code is used to scaffold your assemblies using Hi-C data. This version implements some improvements in the original SALSA algorithm. If you want to use the old version, it can be found in the `old_salsa` branch. 
 
@@ -139,4 +140,8 @@ To dig more into the output, we have added an option that can output scaffolds a
 ```
  python run_pipeline.py -a unitigs.fasta -l unitigs.fasta.fai -b alignment.bed -e {Your Enzyme} -o scaffolds -m yes -g unitigs_graph.gfa -u    unitigs_tiling.bed -p yes
 ```
+
+## Generate .hic file from SALSA scaffolds
+
+You need to have a jar file for Juicertools in order to generate .hic file. It can be found [here] (https://github.com/aidenlab/juicer/wiki/Download). One you download this file on your machine, set the path to the jar file (including the jar file itself) in the `convert.sh` script to `JUICER_JAR` variable. Once that's done, simply run convert.sh script as `convert.sh SALSA_OUT_DIR`, where `SALSA_OUT_DIR` is the directory where the SALSA scaffolds and all the intermediate output resides. Please make sure you have latest version of GNU core utils in order to make use of `--parallel` option in GNU sort. After this script finishes execution, the .hic file will be generated in the `SALSA_OUT_DIR` as `salsa_scaffolds.hic`. This file can be loaded to Juicebox and visualized. 
 
