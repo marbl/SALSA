@@ -557,7 +557,7 @@ def generate_scaffold_graph():
                             G.add_edge(v1,v2,score=float(attrs[4]),linktype='hic')
 
                     else:
-                        if int(attrs[5]) >= 20 and float(attrs[4]) >= 1.1:
+                        if int(attrs[5]) >= 20 and float(attrs[4]) >= 1.12:
                             G.add_edge(v1,v2,score=float(attrs[4]),linktype='hic')
             # else:
             #     print "UNUSED "+ line
