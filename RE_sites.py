@@ -1,5 +1,6 @@
 
 import re 
+import sys
 import argparse
 
 def parse_fasta(fh):
@@ -29,6 +30,13 @@ def main():
     #parser.add_argument("-d","--dir",help="output directory for results",default='out')
     args = parser.parse_args()
     f = parse_fasta(open(args.assembly,'r'))
+
+    if args.enzyme == "DNASE":
+        for key in f:
+            id, seq = key, f[key]
+            print id, len(seq)/2, len(seq)/2
+        sys.exit(0)
+
     enzymes_input = args.enzyme.replace(' ','').split(',')
     final_enzymes = []
     for each in enzymes_input:
