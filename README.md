@@ -1,5 +1,7 @@
 # SALSA: A tool to scaffold long read assemblies with Hi-C 
 
+## New: Support added to SALSA for DNAse HiC Data. To run SALSA in this mode please use `-e DNASE` option. 
+
 ## New: Support added to SALSA to convert scaffolds to .hic format for visualization. You can load this file to Juicebox to visualize HiC contact map. 
 
 This code is used to scaffold your assemblies using Hi-C data. This version implements some improvements in the original SALSA algorithm. If you want to use the old version, it can be found in the `old_salsa` branch. 
