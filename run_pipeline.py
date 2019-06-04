@@ -1,4 +1,5 @@
 import os
+import stat
 import argparse
 import sys
 import subprocess
@@ -68,6 +69,7 @@ def main():
 
         try:
             p = subprocess.check_output(cmd, shell=True)
+            os.chmod(args.output + "/scaffold_length_iteration_1", stat.S_IRUSR | stat.S_IWUSR | stat.S_IRGRP | stat.S_IWGRP | stat.S_IROTH)
         except subprocess.CalledProcessError as err:
             print >> sys.stderr, str(err.output)
             sys.exit(1)
