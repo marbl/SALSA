@@ -29,7 +29,7 @@ The new version of SALSA has been designed to consider several use cases dependi
 ```
 python run_pipeline.py -h
 usage: run_pipeline.py [-h] -a ASSEMBLY -l LENGTH -b BED [-o OUTPUT]
-                       [-c CUTOFF] [-g GFA] [-u UNITIGS] [-t TENX] [-e ENZYME]
+                       [-c CUTOFF] [-g GFA] [-u UNITIGS] [-e ENZYME]
                        [-i ITER] [-x DUP] [-s EXP] [-m CLEAN]
 
 SALSA Iterative Pipeline
@@ -46,9 +46,6 @@ optional arguments:
   -c CUTOFF, --cutoff CUTOFF
                         Minimum contig length to scaffold, default=1000
   -g GFA, --gfa GFA     GFA file for assembly
-  -u UNITIGS, --unitigs UNITIGS
-                        The tiling of unitigs to contigs in bed format
-  -t TENX, --tenx TENX  10x links tab separated file, sorted by last columnls
   -e ENZYME, --enzyme ENZYME
                         Restriction Enzyme used for experiment
   -i ITER, --iter ITER  Number of iterations to run, default = 3
@@ -82,7 +79,7 @@ This will generate `contigs.fasta.fai` as an input for `-l` option. You can use 
 
 ### Restriction Enzyme input
 
-Hi-C experiments can use different restriction enzymes. We use the enzyme frequency in contigs to normalize the Hi-C interaction frequency. You will need to specify which enzyme was used for Hi-C experiment while running SALSA in `-e` option. If multiple enzymes were used, they can specified by separating with comma without space, like `-e GATC,AAGCTT`. Note that you need to specify the actual sequence of the cutting site for a restriction enzyme and not the enzyme name. For example, if you use `MboI` in the Hi-C protocol ,then you would specify it as `-e GATC`.
+Hi-C experiments can use different restriction enzymes. We use the enzyme frequency in contigs to normalize the Hi-C interaction frequency. You will need to specify the restriction site for the enzyme which  was used for Hi-C experiment while running SALSA in `-e` option. If multiple enzymes were used, they can specified by separating with comma without space, like `-e GATC,AAGCTT`. Note that you need to specify the actual sequence of the cutting site for a restriction enzyme and not the enzyme name. For example, if you use `MboI` in the Hi-C protocol ,then you would specify it as `-e GATC`. You can also specify DNASE as an enzyme.
 
 
 ### 1) I have contig sequences and the alignment bam file
@@ -115,7 +112,7 @@ We utilize graph to guide the scaffolding, which in turn reduces the errors.
 Assemblers sometimes outputs unitigs along with contigs. Usually unitigs are shorter in size compared to contigs and hence contain much fewer errors. Because of this, the error correction with Hi-C data is not usually needed if unitigs are used as an input. Also, assembly graph contributes more to the scaffolding if used with unitigs instead of contigs. If you have all this data, you can run SALSA as follows.
 
 ```
- python run_pipeline.py -a unitigs.fasta -l unitigs.fasta.fai -b alignment.bed -e {Your Enzyme} -o scaffolds -m yes -g unitigs_graph.gfa -u unitigs_tiling.bed
+ python run_pipeline.py -a unitigs.fasta -l unitigs.fasta.fai -b alignment.bed -e {Your Enzyme} -o scaffolds -m yes -g unitigs_graph.gfa
 ```
 
 Note here that using `unitigs_tiling.bed` is not mandatory to run SALSA in this mode. You can still run SALSA with `-u` option not set.

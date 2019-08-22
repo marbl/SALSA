@@ -40,6 +40,10 @@ def main():
     enzymes_input = args.enzyme.replace(' ','').split(',')
     final_enzymes = []
     for each in enzymes_input:
+        if not re.match("^[ACGTN]+$", each):
+            print >> sys.stderr, "Error, enzyme should be restriction site sequence (e.g. AACTT) not enzyme name or DNASE, you input %s"%(each)
+            sys.exit(1)
+
         if 'N' in each:
             final_enzymes.append(each.replace('N','G'))
             final_enzymes.append(each.replace('N','A'))
