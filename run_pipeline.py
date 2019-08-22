@@ -14,6 +14,9 @@ def check(path):
             else:
                 return True
 
+def fileExists(path):
+   return os.path.isfile(path) and os.path.getsize(path) > 0
+
 
 ng50 = []
 def NG50(lengths,sz = 0):
@@ -75,7 +78,10 @@ def main():
             sys.exit(1)
 
 
-    if not os.path.isfile(args.output+'/alignment_iteration_1.bed'):
+    if not fileExists(args.output+'/alignment_iteration_1.bed'):
+        if os.path.isfile(args.output+'/alignment_iteration_1.bed'):
+            os.system('rm '+args.output+'/alignment_iteration_1.bed')
+
         #os.system('cp '+args.bed+' '+args.output+'/alignment_iteration_1.bed')
         if args.filter == "yes":
             os.system("cut -f 1 "+args.length+" | grep -v '>'  > "+args.output+"/contig_names.txt")
@@ -115,7 +121,7 @@ def main():
 
 
     #First get RE sites
-    if not os.path.isfile(args.output+'/re_counts_iteration_'+str(iter_num)):
+    if not fileExists(args.output+'/re_counts_iteration_'+str(iter_num)):
         try:
             cmd = 'python '+bin+'/RE_sites.py -a '+args.output + '/assembly.cleaned.fasta -e '+ args.enzyme + ' > '+ args.output+'/re_counts_iteration_'+str(iter_num)
             print cmd
@@ -130,7 +136,7 @@ def main():
 
     #Now compute normal links with old new_links code
     print >> sys.stderr, "Starting Iteration "+ str(iter_num)
-    if not os.path.isfile(args.output+'/contig_links_iteration_'+str(iter_num)):
+    if not fileExists(args.output+'/contig_links_iteration_'+str(iter_num)):
         try:
             cmd = 'python '+bin+'/make_links.py -b '+ args.output+'/alignment_iteration_1.bed' + ' -d '+ args.output +' -i '+str(iter_num) + ' -x ' + args.dup
             print cmd
@@ -144,7 +150,7 @@ def main():
             sys.exit(1)
 
     #now use Serge's code to calculate
-    if not os.path.isfile(args.output+'/contig_links_scaled_iteration_'+str(iter_num)):
+    if not fileExists(args.output+'/contig_links_scaled_iteration_'+str(iter_num)):
         try:
             cmd =  'python '+bin+'/fast_scaled_scores.py -d '+args.output+' -i '+str(iter_num)
             log.write(cmd+'\n')
@@ -157,7 +163,7 @@ def main():
             sys.exit(1)
 
     #Sort the links by column 5
-    if not os.path.isfile(args.output+'/contig_links_scaled_sorted_iteration_'+str(iter_num)):
+    if not fileExists(args.output+'/contig_links_scaled_sorted_iteration_'+str(iter_num)):
         try:
             cmd = 'sort -k 5 -gr '+args.output+'/contig_links_scaled_iteration_'+str(iter_num)+ ' > '+ args.output+'/contig_links_scaled_sorted_iteration_'+str(iter_num)
             log.write(cmd+'\n')
@@ -193,7 +199,7 @@ def main():
                 os.system('rm '+args.output+'scaffolds_iteration_1.p')
             print >> sys.stderr, str(err.output)
             sys.exit(1)
-    if not os.path.isfile(args.output+'/misasm_iteration_'+str(iter_num+1)+'.report'):
+    if not fileExists(args.output+'/misasm_iteration_'+str(iter_num+1)+'.report'):
         try:
             cmd = bin+'/break_contigs -a ' + args.output+'/alignment_iteration_'+str(iter_num+1)+'.bed -b ' + args.output+'/breakpoints_iteration_'+str(iter_num+1)+'.txt -l '+ args.output+'/scaffold_length_iteration_'+str(iter_num+1) + ' -i '+str(iter_num+1)+' -s 100   > ' + args.output+'/misasm_iteration_'+str(iter_num+1)+'.report'
             p = subprocess.check_output(cmd,shell=True)
@@ -203,7 +209,7 @@ def main():
             print  >> sys.stderr, str(err.output)
             sys.exit(1)
 
-    if not os.path.isfile(args.output+'/misasm_'+str(iter_num+1)+'.DONE'):
+    if not fileExists(args.output+'/misasm_'+str(iter_num+1)+'.DONE'):
         try:
             cmd = 'python '+bin+'/refactor_breaks.py -d ' + args.output + ' -i ' + str(iter_num+1)
             p = subprocess.check_output(cmd,shell=True)
@@ -240,7 +246,7 @@ def main():
     #now do iterative
     while True:
         print >> sys.stderr, "Starting Iteration "+ str(iter_num)
-        if not os.path.isfile(args.output+'/contig_links_iteration_'+str(iter_num)):
+        if not fileExists(args.output+'/contig_links_iteration_'+str(iter_num)):
             try:
                 cmd = 'python '+bin+'/make_links.py -b '+ args.output+'/alignment_iteration_'+str(iter_num)+'.bed' + ' -d '+ args.output +' -i '+str(iter_num)
                 print cmd
@@ -266,7 +272,7 @@ def main():
                 print >> sys.stderr, str(err.output)
                 sys.exit(1)
 
-        if not os.path.isfile(args.output+'/contig_links_scaled_sorted_iteration_'+str(iter_num)):
+        if not fileExists(args.output+'/contig_links_scaled_sorted_iteration_'+str(iter_num)):
             try:
                 cmd = 'sort -k 5 -gr '+args.output+'/contig_links_scaled_iteration_'+str(iter_num)+ ' > '+ args.output+'/contig_links_scaled_sorted_iteration_'+str(iter_num)
                 log.write(cmd+'\n')
@@ -280,7 +286,7 @@ def main():
         if check(args.output+'/contig_links_scaled_sorted_iteration_'+str(iter_num)):
             break
 
-        if not os.path.isfile(args.output+'/scaffolds_iteration_'+str(iter_num)+'.p'):
+        if not fileExists(args.output+'/scaffolds_iteration_'+str(iter_num)+'.p'):
             try:
                 cmd = 'python '+bin+'/layout_unitigs.py -x abc -l '+args.output+'/contig_links_scaled_sorted_iteration_'+str(iter_num) +' -c ' +str(args.cutoff)+' -i '+str(iter_num)+' -d '+args.output
                 print cmd

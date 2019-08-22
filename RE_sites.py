@@ -9,6 +9,11 @@ def parse_fasta(fh):
     # Part 1: compile list of lines per sequence
     for ln in fh:
         if ln[0] == '>':
+            # check for bad name
+            if ":" in ln:
+                print >> sys.stderr, "Error, your fasta records contain a ':' (%s). SALSA requires fasta to not contain this character, please update your fasta and re-try"%(ln[1:].rstrip())
+                sys.exit(1)
+
             # new name line; remember current sequence's short name
             long_name = ln[1:].rstrip()
             current_short_name = long_name.split()[0]

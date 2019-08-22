@@ -37,7 +37,7 @@ SALSA Iterative Pipeline
 optional arguments:
   -h, --help            show this help message and exit
   -a ASSEMBLY, --assembly ASSEMBLY
-                        Path to initial assembly
+                        Path to initial assembly, headers must not contain ':'
   -l LENGTH, --length LENGTH
                         Length of contigs at start
   -b BED, --bed BED     Bed file of alignments sorted by read names
