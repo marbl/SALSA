@@ -284,7 +284,7 @@ def main():
                 sys.exit(1)
         #NOW check if any useful link here
         if check(args.output+'/contig_links_scaled_sorted_iteration_'+str(iter_num)):
-            break
+           print >> sys.stderr, "WARNING: Not enough Hi-C reads for scaffolding"
 
         if not fileExists(args.output+'/scaffolds_iteration_'+str(iter_num)+'.p'):
             try:
