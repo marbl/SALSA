@@ -6,13 +6,31 @@ import subprocess
 from subprocess import Popen, PIPE
 
 def check(path):
+    good = 0
+    bad = 0
+    contigs = set()
+    good_links_contigs = set()
     with open(path,'r') as f:
         for line in f:
             attrs = line.split()
+            contig1 = attrs[0].split(':')[0]
+            contig2 = attrs[1].split(':')[0]
+            contigs.add(contig1)
+            contigs.add(contig2)
             if float(attrs[4]) >= 1:
-                return False
+                good += 1
+                good_links_contigs.add(contig1)
+                good_links_contigs.add(contig2)
             else:
-                return True
+                bad += 1
+
+    fraction_good_contigs = len(good_links_contigs) / len(contigs)
+
+    if fraction_good_contigs <= 0.2:
+        return False
+    return True
+
+
 
 def fileExists(path):
    return os.path.isfile(path) and os.path.getsize(path) > 0

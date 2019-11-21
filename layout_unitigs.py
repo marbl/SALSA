@@ -199,21 +199,7 @@ def load_tenx_graph(cutoff):
 
 iteration = int(args.iteration)
 
-'''
-If GFA is given as an argument, load it
-'''
-# shortest_paths = {}
-# if args.graph !='abc':
-#     print >> sys.stderr, 'started loading GFA'
-#     load_GFA(args.graph)
-#     shortest_paths = nx.all_pairs_dijkstra_path_length(OVl_G)
-# print >> sys.stderr, 'Finished loading GFA, nodes =  ' + str(len(OVl_G.nodes())) + ' edges = ' + str(len(OVl_G.edges()))
 
-
-'''
-Load the contigs/scaffolds from the previous iteration if possible.
-Also store the mapping for the contigs to the end of the scaffolds to scaffold id
-'''
 previous_scaffolds = {}
 contig2scaffold = {}
 if int(args.iteration) > 1:
@@ -371,6 +357,7 @@ def load_unitigs_first():
 def generate_scaffold_graph():
     gfa_edges = 0
     tiling_edges = 0
+    hic_edges = 0
     with open(args.directory+'/contig_links_scaled_sorted_iteration_'+str(iteration),'r') as f:
         for line in f:
             # i += 1
@@ -391,7 +378,7 @@ def generate_scaffold_graph():
             if iteration == 1:
                 if contig_length[c1] <= int(args.cutoff) or contig_length[c2] <= int(args.cutoff):
                     continue
-            if float(attrs[4]) < 1 and float(attrs[5]) >= 100:
+            if float(attrs[4]) < 1 and float(attrs[5]) >= 20:
                 if v1 not in G.nodes() and v2 not in G.nodes():
                     #print line
                     #hic_edges += 1
@@ -406,142 +393,6 @@ def generate_scaffold_graph():
                                 break
                 else:
                     break
-                # if args.unitigs !='abc':
-
-                #     '''
-                #     Before anything, check if any of the node is present in the graph. If not then no point of doing this
-                #     '''
-                # if iteration == 1:
-                #     #break
-                #     to_continue = True
-                #     for link in ["B:E", "B:B", "E:B", "E:E"]:
-                #         v1 = c1 + ':'+link[0]
-                #         v2 = c2 + ':' + link[2]
-                #         v3 = c1 + ':' + link[2]
-                #         v4 = c2 + ':' + link[0]
-                #         nodes = G.nodes()
-                #         if v1 in nodes or v2 in nodes or v3 in nodes or v4 in nodes:
-                #             to_continue = False
-
-                #     if not to_continue:
-                #         #print 'continue'
-                #         continue
-
-
-                #     '''
-                #     First check if the edge is present in the unitig graph in both the orientations
-                #     If the unitig graph can not provide this information, then check the GFA graph
-                #     '''
-                #     added = False
-                #     if args.unitigs != 'abc':
-
-                #         for link in ["B:E", "B:B", "E:B", "E:E"]:
-                #             edgeType = link.split(':')
-                #             if unitig_graph.has_edge(c1+':'+edgeType[0], c2+':'+edgeType[1]):
-                #                 v1 = c1+':'+edgeType[0]
-                #                 v2 = c2+':'+edgeType[1]
-                #                 if v1 not in G.nodes() and v2 not in G.nodes():
-                #                     G.add_edge(v1,v2,score=2)
-                #                     tiling_edges += 1
-                #                     contigs.add(c1)
-                #                     contigs.add(c2)
-                #                     added = True
-
-
-                #             if unitig_graph.has_edge(c1+':'+edgeType[1], c2+':'+edgeType[0]):
-                #                 v1 = c1+':'+edgeType[1]
-                #                 v2 = c2+':'+edgeType[0]
-                #                 if v1 not in G.nodes() and v2 not in G.nodes():
-                #                     G.add_edge(v1,v2,score=2)
-                #                     tiling_edges += 1
-                #                     contigs.add(c1)
-                #                     contigs.add(c2)
-                #                     added = True
-
-                #     if not added:
-                #         if args.graph != 'abc':
-                #             p = 10000
-                #             minpath = -1
-                #             ori = ''
-                #             ratio = -1
-                #             for link in ["B:E", "B:B", "E:B", "E:E"]:
-                #                 edgeType = link.split(':')
-                #                 if edgeType[0] == 'B':
-                #                     vertex1 = c1 + '$REV'
-                #                 else:
-                #                     vertex1 = c1 + '$FOW'
-
-                #                 if edgeType[1] == 'B':
-                #                     vertex2 = c2 + '$FOW'
-                #                 else:
-                #                     vertex2 = c2 + '$REV'
-
-                #                 if vertex1 in OVl_G.nodes() and vertex2 in OVl_G.nodes():
-                #                     #print 'present'
-                #                     if vertex1 in shortest_paths:
-                #                         if vertex2 in shortest_paths[vertex1]:
-                #                             p = shortest_paths[vertex1][vertex2]
-                #                             #print p
-                #                     if minpath == -1 or p < minpath:
-                #                         if minpath != -1:
-                #                             ratio = p*1.0/minpath
-                #                         minpath = p
-                #                         ori = link
-
-                #             if minpath != -1 and ratio > 0:
-                #                 G.add_edge(v1,v2,score=1.5)
-                #                 contigs.add(c1)
-                #                 contigs.add(c2)
-                #                 gfa_edges += 1
-
-            # else:
-            #     '''
-            #     Here too, first check 10x links and then unitigs
-            #     '''
-
-            #     if args.unitigs != 'abc':
-            #         '''
-            #         This is tricky. Scaffold is the series of contigs. Check just for the terminal contigs. Look up for their
-            #         path in the unitig tiling and decide if to put an edge or not
-            #         '''
-            #         scaffold_first = previous_scaffolds[c1]
-            #         scaffold_second = previous_scaffolds[c2]
-            #         #if len(scaffold_first) > 2 and len(scaffold_second) > 2:
-            #         first_first = scaffold_first[0]
-            #         last_first = scaffold_first[-1]
-            #         first_second = scaffold_second[0]
-            #         last_second = scaffold_second[-1]
-
-            #         if unitig_graph.has_edge(last_first,first_second):
-            #             v1 = c1+':E'
-            #             v2 = c2 + ':B'
-            #             if v1 not in G.nodes() and v2 not in G.nodes():
-            #                 G.add_edge(v1,v2,score=2)
-
-            #         if unitig_graph.has_edge(reverse_complement(first_first),first_second):
-            #             v1 = c1 + ':B'
-            #             v2 = c2 + ':B'
-            #             if v1 not in G.nodes() and v2 not in G.nodes():
-            #                 G.add_edge(v1,v2,score=2)
-
-            #         if unitig_graph.has_edge(last_first,reverse_complement(last_second)):
-            #             v1 = c1 + ':E'
-            #             v2 = c2 + ':E'
-            #             if v1 not in G.nodes() and v2 not in G.nodes():
-            #                 G.add_edge(v1,v2,score=2)
-
-            #         if unitig_graph.has_edge(reverse_complement(first_first),reverse_complement(last_second)):
-            #             v1 = c1 + ':E'
-            #             v2 = c2 + ':B'
-            #             if v1 not in G.nodes() and v2 not in G.nodes():
-            #                 G.add_edge(v1,v2,score=2)
-            #                 contigs.add(c1)
-            #                 contigs.add(c2)
-            #                 tiling_edges += 1
-
-
-        #     continue
-
             else:
                 if v1 not in G.nodes() and v2 not in G.nodes():
                     #print line
@@ -558,23 +409,10 @@ def generate_scaffold_graph():
 
                     else:
                         if int(attrs[5]) >= 20 and float(attrs[4]) >= 1.12:
+                            hic_edges += 1
                             G.add_edge(v1,v2,score=float(attrs[4]),linktype='hic')
-            # else:
-            #     print "UNUSED "+ line
                     contigs.add(c1)
                     contigs.add(c2)
-    #print >> sys.stderr,  'Finished loading Hi-C links, Loading unitig links now..'
-
-    '''
-    Now try to add 10x and unitig links to the graph. Note that current preference is
-    10x links first and then unitig tiling.
-    TODO: probably give an option to provide preference
-    '''
-
-    #load_tenx_links()
-    #load_unitig_links()
-
-    #Now do usual layout
     for ctg in list(contigs):
         G.add_edge(ctg+":B", ctg+":E", t="c", score=0, linktype='implicit')
 
@@ -777,33 +615,8 @@ def update_bed(expanded_scaffold):
                         #print "Right RE = " + str(left_part/contig_length[contig])
                         #print "Left RE = " + str(right*right_part/contig_length[contig])
 
-                '''
-                if offset <= length/2 and i+2 < len(path):
-                    if contig2info[path[i+2].split(':')[0]][0] <= length/2:
-                        s_left += (left + right)
-                    else:
-                        contig_next = path[i+2].split(':')[0]
-                        if contig2info[contig_next][0] >= length/2:
-                            left_part = length/2 - offset
-                            right_part = contig2info[path[i+2].split(':')[0]][0] - length/2
-                            s_left += left*left_part/contig_length[contig]
-                            s_right += right*right_part/contig_length[contig]
-
-                if offset <= length/2 and i + 2 >= len(path):
-                    left_part = length/2 - offset
-                    right_part = length/2
-                    s_left += left*left_part/contig_length[contig]
-                    s_right += right*right_part/contig_length[contig]
-
-                if offset >= length/2:
-                    s_right += (left+right)
-                offset += contig_length[contig]
-                #scaffold_length[key] += contig_length[contig]
-                '''
-            #print key+"\t"+str(s_left)+"\t"+str(s_right)
             scaffold_re[key] = (s_left,s_right)
-            #print "=============================="
-
+           
     o_lines = ""
     count = 0
     prev_line = ""
@@ -917,14 +730,7 @@ def merge(contigs):
     return scaffolds
 
 
-def correct_scaffolds(curr_scaffolds):
-    '''
-    Do single threaded now. First
-    '''
 
-'''
-Call all the methods here
-'''
 
 generate_scaffold_graph()
 seed_scaffolds,to_merge =  get_seed_scaffold()
@@ -1029,54 +835,6 @@ for key in expanded_scaffold_paths:
 
 
 correct_scaffolds(new_scaffolds)
-
-'''
-Now break the scaffolds at all the junctions where link support is less than 10, to do this, load the graph from first iteration
-'''
-
-# if iteration > 1:
-#     G_first = nx.Graph()
-#     with open(args.directory+'/contig_links_iteration_1','r') as f:
-#         for line in f:
-#             attrs = line.split()
-#             G_first.add_edge(attrs[0],attrs[1],score=float(attrs[2]),links=int(attrs[3]))
-
-#     new_id = 1
-#     updated_scaffolds = {}
-#     for key in final_scaffolds:
-#         scaffold_path = final_scaffolds[key]
-#         to_break = []
-#         for i in xrange(1,len(scaffold_path)-1,2):
-#             curr = scaffold_path[i]
-#             next = scaffold_path[i+1]
-#             if G_first.has_edge(curr,next):
-#                 if G[curr][next]['links'] <= 10:
-#                     to_break.append(i)
-
-#         #now break scaffold
-#         if len(to_break) >= 1:
-#             for i in xrange(len(to_break)):
-#                 if i == 0:
-#                     scaff = scaffold_path[0:to_break[i]+1]
-#                     updated_scaffolds['scaffold_'+str(new_id)] = scaff
-#                     new_id += 1
-#                     continue
-#                 if i == len(to_break) - 1:
-#                     scaff = scaffold_path[to_break[i]:]
-#                     updated_scaffolds['scaffold_'+str(new_id)] = scaff
-#                     new_id += 1
-#                     continue
-#                 scaff = scaffold_path[to_break[i-1]+1 : to_break[i] + 1]
-#                 updated_scaffolds['scaffold_'+str(new_id)] = scaff
-#                 new_id += 1
-#         else:
-#             updated_scaffolds['scaffold_'+str(new_id)] = scaffold_path
-#             new_id += 1
-# else:
-#     updated_scaffolds = expanded_scaffold_paths
-
-# expanded_scaffold_paths = updated_scaffolds
-
 pickle.dump(expanded_scaffold_paths,open(args.directory+'/scaffolds_iteration_'+str(args.iteration)+'.p','w'))
 update_bed(expanded_scaffold_paths)
 
