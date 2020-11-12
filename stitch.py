@@ -1,3 +1,5 @@
+#!/usr/bin/env python2
+
 import argparse,pickle
 
 parser = argparse.ArgumentParser()

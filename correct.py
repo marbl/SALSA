@@ -1,3 +1,5 @@
+#!/usr/bin/env python2
+
 import sys
 
 #reads input assembly, breakpoints given by the method and outputs new contig file with lengths
