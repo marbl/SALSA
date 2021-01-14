@@ -99,7 +99,7 @@ def main():
     os.system('ln -s ' + os.path.abspath(args.assembly) + ' '+args.output+'/assembly.cleaned.fasta')
 
     if args.clean == 'yes':
-       cmd = bin+'/break_contigs_start -a ' + args.output+'/alignment_iteration_1.bed -l ' + args.output+'/scaffold_length_iteration_1 > ' + args.output+'/input_breaks -s 100'
+       cmd = bin+'/break_contigs_start -a ' + args.output+'/alignment_iteration_1.bed -l ' + args.output+'/scaffold_length_iteration_1 -s 100 > ' + args.output+'/input_breaks'
        log.write(cmd)
        try:
            p = subprocess.check_output(cmd,shell=True)
