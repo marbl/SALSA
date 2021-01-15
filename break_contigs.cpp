@@ -20,7 +20,7 @@ using namespace std;
 pair<long,long> check(long from, long polong, vector<pair<long,long>> intervals)
 {
 	long ret = 0;
-	long i;
+	unsigned long i;
 	for(i = from; i < intervals.size();i++)
 	{
 		pair<long,long> curr = intervals[i];
@@ -118,11 +118,11 @@ double inspect(int pos, vector<int>& count)
     for(long i = interval; i < sz;i+=interval)
 	{
 		if(pos - i >= start && pos + i < end)
-		{	
+		{
 			total += 1;
 			if(count[pos - i ] > count[pos] && count[pos + i] > count[pos])
 			{
-				low += 1; 
+				low += 1;
 			}
 		}
 		else
@@ -148,7 +148,7 @@ bool check_if_inside(string contig, long start, long end)
         return false;
     }
     vector<pair<long,pair<long,long>>> positions = contig2breakpoints[contig];
-    for(int i = 0;i < positions.size();i++)
+    for(unsigned int i = 0;i < positions.size();i++)
     {
         if(start >= positions[i].second.first && end <= positions[i].second.second)
         {
@@ -165,13 +165,14 @@ int main(int argc, char *argv[])
 	p.add<string>("alignment", 'a', "bed file for alignment", true, "");
 	//p.add<string>("outputdir", 'd', "coordinate output file", true, "");
 	p.add<string>("breakpoints", 'b', "breakpoints", true, "");
-    p.add<int>("min_size",'s',"Minimum mate pair separation for error findng",true,0);
+  p.add<int>("min_size",'s',"Minimum mate pair separation for error findng",true,0);
 	p.add<string>("contiglen", 'l', "length of contigs", true, "");
 	p.add<int>("iteration",'i',"Iteration number",true,0);
-    p.parse_check(argc, argv);	
+  p.parse_check(argc, argv);
 	string line;
 	ifstream lenfile(getCharExpr(p.get<string>("contiglen")));
-    int separation = p.get<int>("min_size");
+  //unused variable
+	// int separation = p.get<int>("min_size");
 	unordered_map<string,int> contig2cutoff;
     while(getline(lenfile,line))
 	{
@@ -182,12 +183,13 @@ int main(int argc, char *argv[])
 		contig_length[a] = n;
         contig2cutoff[a] = n/10;
 	}
-    int iteration = p.get<int>("iteration");
+  //unused variable
+	// int iteration = p.get<int>("iteration");
 	lenfile.close();
 	load_breakpoints(p.get<string>("breakpoints"));
 	//cout<<"loaded breakpoints"<<endl;
 	ifstream bedfile(getCharExpr(p.get<string>("alignment")));
-	
+
 	unordered_map<string,vector<int> > contig2coverage;
     string prev_line = "";
 	string prev_contig="";
@@ -197,8 +199,10 @@ int main(int argc, char *argv[])
 	while(getline(bedfile,line))
 	{
 		string contig, read;
-		char strand;
-		long start,end,flag;
+		// unused variable
+		// char strand;
+		// long flag
+		long start,end;
 		if(prev_line == "")
 		{
 			prev_line = line;
@@ -231,7 +235,7 @@ int main(int argc, char *argv[])
 			if(prev_end <= start)
 			{
 				//cout<<"here"<<endl;
-                if(check_if_inside(contig,prev_start,end+1))               
+                if(check_if_inside(contig,prev_start,end+1))
                 {
                     if(end - prev_start <= contig2cutoff[contig])
                     {
@@ -253,7 +257,7 @@ int main(int argc, char *argv[])
 
     int total_breakpoints = 0;
     int suspicious_breakpoints = 0;
-    
+
 	for(unordered_map<string,vector<int> > :: iterator it = contig2coverage.begin(); it != contig2coverage.end();++it)
 	{
 		//cout<<"Testing contig " << it->first<<endl;
@@ -262,15 +266,17 @@ int main(int argc, char *argv[])
         {
             cout<<contig;
             vector<pair<long,pair<long,long>>> positions = contig2breakpoints[it->first];
-            
-            for(int i = 0;i < positions.size();i++)
+
+            for(unsigned int i = 0;i < positions.size();i++)
             {
                 //cout<<"testing "<<i<<endl;
                 long misasm_loc = positions[i].first;
                 long start = positions[i].second.first;
                 long end = positions[i].second.second;
-                long start_pos = start;
-                long end_pos = end;
+
+								long start_pos = start;
+                //unused variable
+								//long end_pos = end;
                 vector<int> cov = contig2coverage[it->first];
                 vector<int> local_coverage;
                 vector<int>tmpcov(cov);
@@ -289,12 +295,12 @@ int main(int argc, char *argv[])
                 double average = accumulate(local_coverage.begin(),local_coverage.end(),0.0)/local_coverage.size();
                 //cout<<"average coverage = "<<average<<endl;
                 vector<long> misasm_pos;
-               for(int div = 5; div <= 15; div++)                                                                        
+               for(int div = 5; div <= 15; div++)
                {
-                   double cutoff = average/div;                                                                         
+                   double cutoff = average/div;
                    vector<int>delta;
                    //cout<<"Cutoff = " << cutoff<<endl;
-                   for(long j = 0; j < local_coverage.size();j++)
+                   for(unsigned long j = 0; j < local_coverage.size();j++)
                    {
                        if(local_coverage[j] < cutoff)
                        {
@@ -302,7 +308,7 @@ int main(int argc, char *argv[])
                        }
                        else
                        {
-                           delta.push_back(-5); 
+                           delta.push_back(-5);
                        }
                    }
                    long sz = delta.size();
@@ -350,5 +356,3 @@ int main(int argc, char *argv[])
     cout<<"Percent Suspicious Joins = "<<suspicious_breakpoints*100.0/total_breakpoints<<endl;
 	return 0;
 }
-
-

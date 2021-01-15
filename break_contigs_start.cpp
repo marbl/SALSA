@@ -20,7 +20,7 @@ using namespace std;
 pair<long,long> check(long from, long polong, vector<pair<long,long>> intervals)
 {
 	long ret = 0;
-	long i;
+	unsigned long i;
 	for(i = from; i < intervals.size();i++)
 	{
 		pair<long,long> curr = intervals[i];
@@ -96,11 +96,11 @@ double inspect(int pos, vector<int>& count)
     for(long i = interval; i < sz;i+=interval)
 	{
 		if(pos - i >= start && pos + i < end)
-		{	
+		{
 			total += 1;
 			if(count[pos - i ] > count[pos] && count[pos + i] > count[pos])
 			{
-				low += 1; 
+				low += 1;
 			}
 		}
 		else
@@ -137,7 +137,8 @@ void get_MAD_complete(string contig, vector<int>& count)
 
 //	cout<<"============================="<<endl;
 	double median = 0;
-	double mad = 0;
+	//unused variable
+	//double mad = 0;
 	long sz = count.size();
 	vector<int> original = count;
 	double sum = std::accumulate(original.begin(), original.end(), 0.0);
@@ -145,8 +146,9 @@ void get_MAD_complete(string contig, vector<int>& count)
 	std::vector<double> diff(original.size());
 	std::transform(original.begin(), original.end(), diff.begin(),
 	std::bind2nd(std::minus<double>(), mean));
-	double sq_sum = std::inner_product(diff.begin(), diff.end(), diff.begin(), 0.0);
-	double stdev = std::sqrt(sq_sum / original.size());
+	//unused variables
+  //double sq_sum = std::inner_product(diff.begin(), diff.end(), diff.begin(), 0.0);
+	//double stdev = std::sqrt(sq_sum / original.size());
 
 	sort(count.begin(),count.end());
 
@@ -164,18 +166,18 @@ void get_MAD_complete(string contig, vector<int>& count)
 		count[i] = abs(count[i] - median);
 	}
 	sort(count.begin(),count.end());
-	mad = count[sz/2];
+	//mad = count[sz/2];
 
 	vector<int>join_coverage;
 
 //	cout<<"CONTIG "<<contig<<" MEAN = "<<mean<<" STD = "<<stdev<<" MEDIAN = "<<median<<" MAD = "<<mad<<endl;
-	for(int ind = 0; ind < contig2breakpoints[contig].size();ind++)
+	for(unsigned int ind = 0; ind < contig2breakpoints[contig].size();ind++)
 	{
 		long pos = contig2breakpoints[contig][ind];
 		//cout<<"COVERAGE AT POSITION "<<pos <<" = "<<original[pos]<<endl;
 		join_coverage.push_back(original[pos]);
 	}
-	for(int i = 1; i < join_coverage.size() - 1; i++)
+	for(unsigned int i = 1; i < join_coverage.size() - 1; i++)
 	{
 		if(join_coverage[i] < join_coverage[i-1] && join_coverage[i] < join_coverage[i+1])
 		{
@@ -194,10 +196,11 @@ void get_MAD(string contig, vector<int>& count)
 	double mad = 0;
 	long sz = count.size();
 	vector<int> original = count;
-	long check_index = 0;
+	//unused variable
+	// long check_index = 0;
 	//cout<<"SIZE = "<<sz<<endl;
-	
-	for(int ind = 0; ind < contig2breakpoints[contig].size();ind++)
+
+	for(unsigned int ind = 0; ind < contig2breakpoints[contig].size();ind++)
 	{
 		long bound = 5000000;
 		long win_size;
@@ -221,7 +224,7 @@ void get_MAD(string contig, vector<int>& count)
 			}
 		long start = pos - win_size;
 		long end = pos + win_size;
-		//cout<<"WINDOW Size = "<<start<<" - "<<end<<endl; 
+		//cout<<"WINDOW Size = "<<start<<" - "<<end<<endl;
 		vector<int> curr_part = slice(count,start,end);
 
 		//COmpute mean and stdev
@@ -274,12 +277,13 @@ int main(int argc, char *argv[])
 	p.add<string>("contiglen", 'l', "length of contigs", true, "");
 	//p.add<int>("iteration",'i',"Iteration number",true,0);
     p.add<int>("min_size",'s',"Minimum mate pair separation for error findng",true,0);
-    p.parse_check(argc, argv);	
+    p.parse_check(argc, argv);
 	string line;
 	ifstream lenfile(getCharExpr(p.get<string>("contiglen")));
-    int separation = p.get<int>("min_size");
-    unordered_map<string,int> contig2cutoff;
-    while(getline(lenfile,line))
+  // unused variabble
+	// int separation = p.get<int>("min_size");
+  unordered_map<string,int> contig2cutoff;
+  while(getline(lenfile,line))
 	{
 		istringstream iss(line);
 		string a;
@@ -293,7 +297,7 @@ int main(int argc, char *argv[])
 	//load_breakpoints(p.get<string>("breakpoints"));
 	//cout<<"loaded breakpoints"<<endl;
 	ifstream bedfile(getCharExpr(p.get<string>("alignment")));
-	
+
 	unordered_map<string,vector<int> > contig2coverage;
 	string prev_line = "";
 	string prev_contig="";
@@ -303,8 +307,11 @@ int main(int argc, char *argv[])
 	while(getline(bedfile,line))
 	{
 		string contig, read;
-		char strand;
-		long start,end,flag;
+		//unused variable
+		// char strand;
+		// long flag;
+		long start,end;
+
 		if(prev_line == "")
 		{
 			prev_line = line;
@@ -331,7 +338,7 @@ int main(int argc, char *argv[])
 		//vector<int> cov = contig2coverage[contig];
 		if(read.substr(0,read.length()-2) == prev_read.substr(0,prev_read.length()-2) && prev_contig == contig)
 		{
-           long span_start = 0, span_end = 0;                   
+           long span_start = 0, span_end = 0;
            if(prev_end <= start)
            {
                span_start = prev_start;
@@ -365,10 +372,10 @@ int main(int argc, char *argv[])
            {
                 if(span_end - span_start <= contig2cutoff[contig])
                 {
-                    contig2coverage[contig].at(span_start) += 1; 
+                    contig2coverage[contig].at(span_start) += 1;
                     contig2coverage[contig].at(span_end+1) -= 1;
                 }
-			
+
            } //contig2coverage[contig] = cov;
 		}
 		prev_contig = contig;
@@ -379,14 +386,15 @@ int main(int argc, char *argv[])
 	bedfile.close();
 	cerr<<"bedfile loaded"<<endl;
 
-    int total_breakpoints = 0;
-    int suspicious_breakpoints = 0;
+  // unused variables
+  // int total_breakpoints = 0;
+  // int suspicious_breakpoints = 0;
 
 	for(unordered_map<string,vector<int> > :: iterator it = contig2coverage.begin(); it != contig2coverage.end();++it)
 	{
 		//cout<<"Testing contig " << it->first<<endl;
         vector<int> cov = contig2coverage[it->first];
-		for(long i = 1; i< cov.size();i++)
+		for(unsigned long i = 1; i< cov.size();i++)
 		{
 			cov[i] += cov[i-1];
 			//cout<<(int)cov[i]<<endl;
@@ -394,19 +402,19 @@ int main(int argc, char *argv[])
 		contig2coverage[it->first] = cov;
 		//get_MAD_complete(it->first,cov);
         string contig = it->first;
-	    
+
         /*
          *Delta array will store 1 if coverage is less than threshold , -1 otherwise
          */
-        
+
         double average = accumulate(cov.begin(),cov.end(),0.0)/cov.size();
         vector<long> positions;
         for(int div = 5; div <= 15; div++)
         {
-            double cutoff = average/div; 
+            double cutoff = average/div;
             vector<int>delta;
             //cout<<"Cutoff = " << cutoff<<endl;
-            for(long i = 0; i < cov.size();i++)
+            for(unsigned long i = 0; i < cov.size();i++)
             {
                 if(cov[i] < cutoff)
                 {
@@ -414,7 +422,7 @@ int main(int argc, char *argv[])
                 }
                 else
                 {
-                    delta.push_back(-5); 
+                    delta.push_back(-5);
                 }
             }
             long sz = delta.size();
@@ -453,5 +461,3 @@ int main(int argc, char *argv[])
     }
 	return 0;
 }
-
-
