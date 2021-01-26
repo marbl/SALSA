@@ -97,17 +97,16 @@ for key in sorted_scaffolds:
 
         agp_output.write(line+'\n')
         if i != len(path) - 2:
-            for j in range(0,500):
-                curr_contig += 'N'
+            curr_contig += 'N'*100
             line = ""
             line += "scaffold_"+str(c_id)+'\t'
             line += str(start) +'\t'
-            end = 500 + start - 1
+            end = 100 + start - 1
             line += str(end) + '\t'
             start = end + 1
             line += str(local_comp) +'\t'
             local_comp += 1
-            line += 'N\t500\tscaffold\tyes\tproximity_ligation'
+            line += 'U\t100\tscaffold\tyes\tproximity_ligation'
             agp_output.write(line+'\n')
             line=""
     # rec = SeqRecord(Seq(curr_contig,generic_dna),id='scaffold_'+str(c_id))
