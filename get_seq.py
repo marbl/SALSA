@@ -89,9 +89,9 @@ for key in sorted_scaffolds:
         #print curr
         if curr[1] == 'B' and next[1] == 'E':
             curr_contig += id2seq[curr[0]]
-            line += '+\t'
+            line += '+'
         if curr[1] == 'E' and next[1] == 'B':
-            line += '-\t'
+            line += '-'
             #print id2seq[curr[0]]
             curr_contig += revcompl(id2seq[curr[0]])
 
@@ -107,7 +107,7 @@ for key in sorted_scaffolds:
             start = end + 1
             line += str(local_comp) +'\t'
             local_comp += 1
-            line += 'N\t500\tscaffold\tyes\tna'
+            line += 'N\t500\tscaffold\tyes\tproximity_ligation'
             agp_output.write(line+'\n')
             line=""
     # rec = SeqRecord(Seq(curr_contig,generic_dna),id='scaffold_'+str(c_id))
