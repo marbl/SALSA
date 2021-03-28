@@ -42,8 +42,8 @@ typedef boost::iterator_property_map < Weight*, IndexMap, Weight, Weight& > Dist
 std::vector<std::string> split(std::string const & s, size_t count)
 {
   vector<string> ret;
-  
-  for(int i = 0;i < s.length();i+=count)
+
+  for(unsigned int i = 0;i < s.length();i+=count)
   {
     ret.push_back(s.substr(i,count));
   }
@@ -78,7 +78,7 @@ int main(int argc, char* argv[])
 				hic_links = optarg;
 				break;
 			}
-			case 'g':	
+			case 'g':
 			{
 				//cout<<optarg<<endl;
 				gfa = optarg;
@@ -90,7 +90,7 @@ int main(int argc, char* argv[])
 				print_usage();
 				exit(EXIT_FAILURE);
 			}
-		}	
+		}
 	}
 
 	if(gfa == "" || hic_links == "")
@@ -172,7 +172,7 @@ int main(int argc, char* argv[])
 			boost::add_edge(unitig2id[v1],unitig2id[v2],w,g);
 			boost::add_edge(unitig2id[v3],unitig2id[v4],w,g);
 		}
-	}	
+	}
 	edges.close();
 	cerr<<"Done loading GFA file"<<endl;
 	cerr<<"Number of Nodes = "<<boost::num_vertices(g)<<endl;
@@ -180,11 +180,11 @@ int main(int argc, char* argv[])
 
 
 	/*
-	Assume that HiC links are given with in the decreasing order of weights. 
+	Assume that HiC links are given with in the decreasing order of weights.
 	Also, process only those shortest path queries for which no link is added before.
 	This would reduce tons of computation time
 	*/
-	
+
     unordered_map<string,bool> added;
 	ifstream hic(getCharExpr(hic_links));
 	while(getline(hic,line))
@@ -233,8 +233,8 @@ int main(int argc, char* argv[])
 		orientations.push_back("EE");
 		bool done = false;
 		bool printed = false;
-        bool inlimits = false;
-        for(int i = 0;i < orientations.size();i++)
+    bool inlimits = false;
+    for(unsigned int i = 0;i < orientations.size();i++)
 		{
             printed = false;
 			string orientation = orientations[i];
@@ -278,7 +278,7 @@ int main(int argc, char* argv[])
 					//cout<<"here"<<endl;
 					//string linkorient = string(a[a.length()-1]) + string(b[b.length()-1]);
 					//extract contig name
-				    //cout<<"here"<<endl;	
+				    //cout<<"here"<<endl;
 					long path_len;
 					if(orientation == "BB" || orientation == "BE")
 					{
@@ -289,7 +289,7 @@ int main(int argc, char* argv[])
 					{
 						path_len = distanceMapFOW[unitig2id[v2]];
                         //cout<<"PATH LENGTH = "<<path_len<<endl;
-					}	
+					}
 					if(path_len < INT_MAX && path_len > INT_MIN)
 					{
                         //cout<<"Path Length = "<<path_len<<endl;
@@ -345,7 +345,7 @@ int main(int argc, char* argv[])
 		}
         //cout<<"======================="<<endl;
 	}
-	
+
 	// BGL_FORALL_VERTICES(v, g, Graph)
  //  	{
  //  		cout<<id2unitig[1]<<"\t"<<id2unitig[v]<<"\t"<<distanceMap[v]<<endl;

@@ -1,3 +1,4 @@
+#!/usr/bin/env python2
 import os
 import stat
 import argparse
@@ -98,14 +99,14 @@ def main():
     os.system('ln -s ' + os.path.abspath(args.assembly) + ' '+args.output+'/assembly.cleaned.fasta')
 
     if args.clean == 'yes':
-       cmd = bin+'/break_contigs_start -a ' + args.output+'/alignment_iteration_1.bed -l ' + args.output+'/scaffold_length_iteration_1 > ' + args.output+'/input_breaks -s 100'
+       cmd = bin+'/break_contigs_start -a ' + args.output+'/alignment_iteration_1.bed -l ' + args.output+'/scaffold_length_iteration_1 -s 100 > ' + args.output+'/input_breaks'
        log.write(cmd)
        try:
            p = subprocess.check_output(cmd,shell=True)
        except subprocess.CalledProcessError as err:
            print >> sys.stderr,str(err.output)
 
-       cmd = 'python ' +bin+'/correct.py  ' + args.assembly + ' '+args.output+'/input_breaks '+args.output+'/alignment_iteration_1.bed '+args.output
+       cmd = 'python2 ' +bin+'/correct.py  ' + args.assembly + ' '+args.output+'/input_breaks '+args.output+'/alignment_iteration_1.bed '+args.output
        log.write(cmd)
        try:
            p = subprocess.check_output(cmd,shell=True)
@@ -123,7 +124,7 @@ def main():
     #First get RE sites
     if not fileExists(args.output+'/re_counts_iteration_'+str(iter_num)):
         try:
-            cmd = 'python '+bin+'/RE_sites.py -a '+args.output + '/assembly.cleaned.fasta -e '+ args.enzyme + ' > '+ args.output+'/re_counts_iteration_'+str(iter_num)
+            cmd = 'python2 '+bin+'/RE_sites.py -a '+args.output + '/assembly.cleaned.fasta -e '+ args.enzyme + ' > '+ args.output+'/re_counts_iteration_'+str(iter_num)
             print cmd
             log.write(cmd+'\n')
             p = subprocess.check_output(cmd,shell=True)
@@ -138,7 +139,7 @@ def main():
     print >> sys.stderr, "Starting Iteration "+ str(iter_num)
     if not fileExists(args.output+'/contig_links_iteration_'+str(iter_num)):
         try:
-            cmd = 'python '+bin+'/make_links.py -b '+ args.output+'/alignment_iteration_1.bed' + ' -d '+ args.output +' -i '+str(iter_num) + ' -x ' + args.dup
+            cmd = 'python2 '+bin+'/make_links.py -b '+ args.output+'/alignment_iteration_1.bed' + ' -d '+ args.output +' -i '+str(iter_num) + ' -x ' + args.dup
             print cmd
             log.write(cmd+'\n')
             p = subprocess.check_output(cmd,shell=True)
@@ -152,7 +153,7 @@ def main():
     #now use Serge's code to calculate
     if not fileExists(args.output+'/contig_links_scaled_iteration_'+str(iter_num)):
         try:
-            cmd =  'python '+bin+'/fast_scaled_scores.py -d '+args.output+' -i '+str(iter_num)
+            cmd =  'python2 '+bin+'/fast_scaled_scores.py -d '+args.output+' -i '+str(iter_num)
             log.write(cmd+'\n')
             print cmd
             p = subprocess.check_output(cmd,shell=True)
@@ -189,7 +190,7 @@ def main():
 
     if not os.path.isfile(args.output+'/scaffolds_iteration_1.p'):
         try:
-            cmd = 'python '+bin+'/layout_unitigs.py -x '+args.gfa + ' -l '+args.output+'/contig_links_scaled_sorted_iteration_'+str(iter_num) +' -c ' +str(args.cutoff)+' -i 1 -d '+args.output
+            cmd = 'python2 '+bin+'/layout_unitigs.py -x '+args.gfa + ' -l '+args.output+'/contig_links_scaled_sorted_iteration_'+str(iter_num) +' -c ' +str(args.cutoff)+' -i 1 -d '+args.output
             log.write(cmd+'\n')
             print cmd
             p = subprocess.check_output(cmd,shell=True)
@@ -211,7 +212,7 @@ def main():
 
     if not fileExists(args.output+'/misasm_'+str(iter_num+1)+'.DONE'):
         try:
-            cmd = 'python '+bin+'/refactor_breaks.py -d ' + args.output + ' -i ' + str(iter_num+1)
+            cmd = 'python2 '+bin+'/refactor_breaks.py -d ' + args.output + ' -i ' + str(iter_num+1)
             p = subprocess.check_output(cmd,shell=True)
             print cmd
             log.write(cmd+'\n')
@@ -223,7 +224,7 @@ def main():
             sys.exit(1)
 
     if args.prnt == 'yes':
-        cmd = 'python ' + bin+'/get_seq.py -a '+ args.output +'/assembly.cleaned.fasta -f ' + args.output+'/scaffolds_ITERATION_'+str(iter_num)+'.fasta -g ' + args.output+'/scaffolds_ITERATION_'+str(iter_num)+'.agp -p '+ args.output+'/scaffolds_iteration_'+str(iter_num)+'.p'
+        cmd = 'python2 ' + bin+'/get_seq.py -a '+ args.output +'/assembly.cleaned.fasta -f ' + args.output+'/scaffolds_ITERATION_'+str(iter_num)+'.fasta -g ' + args.output+'/scaffolds_ITERATION_'+str(iter_num)+'.agp -p '+ args.output+'/scaffolds_iteration_'+str(iter_num)+'.p'
         log.write(cmd+'\n')
         try:
             p = subprocess.check_output(cmd,shell=True)
@@ -239,7 +240,7 @@ def main():
             scaffold_length[attrs[0]] = int(attrs[1])
         ng50.append(NG50(scaffold_length,genome_size))
     if iter_num - 1 == int(args.iter):
-        cmd ='python '+bin+'/get_seq.py -a '+ args.output + '/assembly.cleaned.fasta -f ' + args.output+'/scaffolds_FINAL.fasta -g ' + args.output+'/scaffolds_FINAL.agp -p '+args.output+'/scaffolds_iteration_'+str(args.iter)+'.p'
+        cmd ='python2 '+bin+'/get_seq.py -a '+ args.output + '/assembly.cleaned.fasta -f ' + args.output+'/scaffolds_FINAL.fasta -g ' + args.output+'/scaffolds_FINAL.agp -p '+args.output+'/scaffolds_iteration_'+str(args.iter)+'.p'
         log.write(cmd+'\n')
         os.system(cmd)
         sys.exit(0)
@@ -248,7 +249,7 @@ def main():
         print >> sys.stderr, "Starting Iteration "+ str(iter_num)
         if not fileExists(args.output+'/contig_links_iteration_'+str(iter_num)):
             try:
-                cmd = 'python '+bin+'/make_links.py -b '+ args.output+'/alignment_iteration_'+str(iter_num)+'.bed' + ' -d '+ args.output +' -i '+str(iter_num)
+                cmd = 'python2 '+bin+'/make_links.py -b '+ args.output+'/alignment_iteration_'+str(iter_num)+'.bed' + ' -d '+ args.output +' -i '+str(iter_num)
                 print cmd
                 p = subprocess.check_output(cmd,shell=True)
                 log.write(cmd+'\n')
@@ -263,7 +264,7 @@ def main():
         print >> sys.stderr, "Starting Iteration "+ str(iter_num)
         if not os.path.isfile(args.output+'/contig_links_scaled_iteration_'+str(iter_num)):
             try:
-                cmd =  'python '+bin+'/fast_scaled_scores.py -d '+args.output+' -i '+str(iter_num)
+                cmd =  'python2 '+bin+'/fast_scaled_scores.py -d '+args.output+' -i '+str(iter_num)
                 log.write(cmd+'\n')
                 p = subprocess.check_output(cmd,shell=True)
             except subprocess.CalledProcessError as err:
@@ -288,7 +289,7 @@ def main():
 
         if not fileExists(args.output+'/scaffolds_iteration_'+str(iter_num)+'.p'):
             try:
-                cmd = 'python '+bin+'/layout_unitigs.py -x abc -l '+args.output+'/contig_links_scaled_sorted_iteration_'+str(iter_num) +' -c ' +str(args.cutoff)+' -i '+str(iter_num)+' -d '+args.output
+                cmd = 'python2 '+bin+'/layout_unitigs.py -x abc -l '+args.output+'/contig_links_scaled_sorted_iteration_'+str(iter_num) +' -c ' +str(args.cutoff)+' -i '+str(iter_num)+' -d '+args.output
                 print cmd
                 log.write(cmd+'\n')
                 p = subprocess.check_output(cmd,shell=True)
@@ -312,7 +313,7 @@ def main():
 
         if not os.path.isfile(args.output+'/misasm_'+str(iter_num+1)+'.DONE'):
             try:
-                cmd = 'python '+bin+'/refactor_breaks.py -d ' + args.output + ' -i ' + str(iter_num+1) + ' > '+args.output+'/misasm_'+str(iter_num+1)+'.log'
+                cmd = 'python2 '+bin+'/refactor_breaks.py -d ' + args.output + ' -i ' + str(iter_num+1) + ' > '+args.output+'/misasm_'+str(iter_num+1)+'.log'
                 print cmd
                 log.write(cmd+'\n')
                 p = subprocess.check_output(cmd,shell=True)
@@ -325,7 +326,7 @@ def main():
 
 
         if args.prnt == 'yes':
-            cmd = 'python ' + bin+'/get_seq.py -a '+ args.output +'/assembly.cleaned.fasta -f ' + args.output+'/scaffolds_ITERATION_'+str(iter_num)+'.fasta -g ' + args.output+'/scaffolds_ITERATION_'+str(iter_num)+'.agp -p '+ args.output+'/scaffolds_iteration_'+str(iter_num)+'.p'
+            cmd = 'python2 ' + bin+'/get_seq.py -a '+ args.output +'/assembly.cleaned.fasta -f ' + args.output+'/scaffolds_ITERATION_'+str(iter_num)+'.fasta -g ' + args.output+'/scaffolds_ITERATION_'+str(iter_num)+'.agp -p '+ args.output+'/scaffolds_iteration_'+str(iter_num)+'.p'
             log.write(cmd+'\n')
             try:
                 p = subprocess.check_output(cmd,shell=True)
@@ -340,14 +341,14 @@ def main():
             ng50.append(NG50(scaffold_length,genome_size))
             curr_sz = len(ng50)
             if ng50[curr_sz - 1] == ng50[curr_sz - 2]:
-                cmd ='python '+bin+'/get_seq.py -a '+ args.output + '/assembly.cleaned.fasta -f ' + args.output+'/scaffolds_FINAL.fasta -g ' + args.output+'/scaffolds_FINAL.agp -p '+args.output+'/scaffolds_iteration_'+str(iter_num-1)+'.p'
+                cmd ='python2 '+bin+'/get_seq.py -a '+ args.output + '/assembly.cleaned.fasta -f ' + args.output+'/scaffolds_FINAL.fasta -g ' + args.output+'/scaffolds_FINAL.agp -p '+args.output+'/scaffolds_iteration_'+str(iter_num-1)+'.p'
                 log.write(cmd+'\n')
                 os.system(cmd)
                 sys.exit(0)
 
 
         if iter_num - 1 == int(args.iter):
-            cmd ='python '+bin+'/get_seq.py -a '+ args.output + '/assembly.cleaned.fasta -f ' + args.output+'/scaffolds_FINAL.fasta -g ' + args.output+'/scaffolds_FINAL.agp -p '+args.output+'/scaffolds_iteration_'+str(args.iter)+'.p'
+            cmd ='python2 '+bin+'/get_seq.py -a '+ args.output + '/assembly.cleaned.fasta -f ' + args.output+'/scaffolds_FINAL.fasta -g ' + args.output+'/scaffolds_FINAL.agp -p '+args.output+'/scaffolds_iteration_'+str(args.iter)+'.p'
             log.write(cmd+'\n')
             os.system(cmd)
             sys.exit(0)
