@@ -678,11 +678,11 @@ def insert(assignment, seed_scaffolds):
                     total_max = score_fow
                     orientation = 'fow'
                     pos = i
-                else:
-                    if score_rev > total_max:
-                        total_max = score_rev
-                        orientation = 'rev'
-                        pos = i
+            else:
+                if score_rev > total_max:
+                    total_max = score_rev
+                    orientation = 'rev'
+                    pos = i
 
         if total_max != -1:
             #print contig
