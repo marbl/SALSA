@@ -94,8 +94,12 @@ def update_bed(expanded_scaffold):
                             prev_info = contig2info[prev_contig]
                             prev_start = int(prev_attrs[1])
                             prev_end = int(prev_attrs[2])
-                            new_prev_start = prev_start + prev_info[0]
-                            new_prev_end = prev_end + prev_info[0]
+                            if prev_info[2] == 'FOW':
+                                new_prev_start = prev_info[0] + prev_start
+                                new_prev_end = prev_info[0] + prev_end
+                            else:
+                                new_prev_start = prev_info[0] + unitig_length[prev_contig] - prev_end
+                                new_prev_end = prev_info[0] + unitig_length[prev_contig] - prev_start
                             olines += "0\t"+prev_scaffold+'\t'+str(new_prev_start)+"\t0\t"
                             #o_lines += prev_scaffold+'\t'+str(new_prev_start)+'\t'+str(new_prev_end)+'\t'+prev_attrs[3]+'\n'
                             count += 1
@@ -103,8 +107,12 @@ def update_bed(expanded_scaffold):
                             curr_info = contig2info[curr_contig]
                             curr_start = int(curr_attrs[1])
                             curr_end = int(curr_attrs[2])
-                            new_curr_start = curr_start + curr_info[0]
-                            new_curr_end = curr_end + curr_info[0]
+                            if curr_info[2] == 'FOW':
+                                new_curr_start = curr_info[0] + curr_start
+                                new_curr_end = curr_info[0] + curr_end
+                            else:
+                                new_curr_start = curr_info[0] + unitig_length[curr_contig] - curr_end
+                                new_curr_end = curr_info[0] + unitig_length[curr_contig] - curr_start
                             olines += "1\t"+curr_scaffold+'\t'+str(new_curr_start)+"\t1\n"
                             #o_lines += curr_scaffold+'\t'+str(new_curr_start)+'\t'+str(new_curr_end)+'\t'+curr_attrs[3]+'\n'
                             count += 1

@@ -69,31 +69,41 @@ def update_bed(expanded_scaffold):
         s_right = 0
         if len(path) == 2:
             contig = path[0].split(':')[0]
-            scaffold_re[key] = re_counts[contig]
+            ori = path[0].split(':')[1]
+            left,right = re_counts[contig]
+            if ori == 'B':
+                scaffold_re[key] = (left,right)
+            else:
+                scaffold_re[key] = (right,left)
         else:
+            midpoint = length/2
             for i in xrange(0,len(path),2):
                 contig = path[i].split(':')[0]
-                contig2scaffold[contig] = key
                 left,right = re_counts[contig]
-                midpoint = length/2
                 curr_contig_start = contig2info[contig][0]
                 curr_contig_end = contig2info[contig][1]
-                curr_contig_ori = contig2info[contig][2]
-                if curr_contig_end <= midpoint:
+                # curr_contig_ori = contig2info[contig][2]
+                if curr_contig_end < midpoint:
                     s_left += (left+right)
-                if curr_contig_start >= midpoint:
+                if curr_contig_start > midpoint:
                     s_right += (left+right)
 
                 if curr_contig_start <= midpoint and curr_contig_end >= midpoint:
                     left_part = midpoint - curr_contig_start
                     right_part = curr_contig_end - midpoint
+                    s_left += float(left+right)/unitig_length[contig]*left_part
+                    s_right += float(left+right)/unitig_length[contig]*right_part
+                    
+                    ## do NOT consider forward or reverse orientation here
+                    ## left is always left, right is always right
+                    '''
                     if curr_contig_ori == "FOW":
                         s_left += (right+left)*left_part/unitig_length[contig]
                         s_right += (right+left)*right_part/unitig_length[contig]
                     else:
                         s_left += (right+left)*right_part/unitig_length[contig]
                         s_right += (right+left)*left_part/unitig_length[contig]
-
+                    '''
 
                 '''
                 if offset <= length/2 and i+2 < len(path):
@@ -118,7 +128,7 @@ def update_bed(expanded_scaffold):
                 offset += unitig_length[contig]
                 #scaffold_length[key] += contig_length[contig]
                 '''
-            scaffold_re[key] = (s_left,s_right)
+            scaffold_re[key] = (int(s_left),int(s_right))
 
     o_lines = ""
     count = 0
@@ -151,16 +161,24 @@ def update_bed(expanded_scaffold):
                             prev_info = contig2info[prev_contig]
                             prev_start = int(prev_attrs[1])
                             prev_end = int(prev_attrs[2])
-                            new_prev_start = prev_start + prev_info[0]
-                            new_prev_end = prev_end + prev_info[0]
+                            if prev_info[2] == 'FOW':
+                                new_prev_start = prev_info[0] + prev_start
+                                new_prev_end = prev_info[0] + prev_end
+                            else:
+                                new_prev_start = prev_info[0] + unitig_length[prev_contig] - prev_end
+                                new_prev_end = prev_info[0] + unitig_length[prev_contig] - prev_start
                             o_lines += prev_scaffold+'\t'+str(new_prev_start)+'\t'+str(new_prev_end)+'\t'+prev_attrs[3]+'\n'
                             count += 1
 
                             curr_info = contig2info[curr_contig]
                             curr_start = int(curr_attrs[1])
                             curr_end = int(curr_attrs[2])
-                            new_curr_start = curr_start + curr_info[0]
-                            new_curr_end = curr_end + curr_info[0]
+                            if curr_info[2] == 'FOW':
+                                new_curr_start = curr_info[0] + curr_start
+                                new_curr_end = curr_info[0] + curr_end
+                            else:
+                                new_curr_start = curr_info[0] + unitig_length[curr_contig] - curr_end
+                                new_curr_end = curr_info[0] + unitig_length[curr_contig] - curr_start
                             o_lines += curr_scaffold+'\t'+str(new_curr_start)+'\t'+str(new_curr_end)+'\t'+curr_attrs[3]+'\n'
                             count += 1
                             if count == 1000000:
