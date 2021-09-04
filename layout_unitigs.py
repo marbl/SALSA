@@ -1,4 +1,4 @@
-#!/usr/bin/env python2
+#!/usr/bin/env python
 import networkx as nx
 import sys
 import operator
@@ -177,7 +177,7 @@ def load_unitig_mapping():
                     unitig_graph.add_edge(curr_unitig+':E',prev_unitig+':E')
 
             prev_line = line
-    print >> sys.stderr, 'Unitig tiling graph loaded, nodes = ' + str(len(unitig_graph.nodes())) + ' edges = ' + str(len(unitig_graph.edges()))
+    print('Unitig tiling graph loaded, nodes = ' + str(len(unitig_graph.nodes())) + ' edges = ' + str(len(unitig_graph.edges())), file=sys.stderr)
     return unitig_graph
 
 
@@ -219,7 +219,7 @@ previous_scaffolds = {}
 contig2scaffold = {}
 if int(args.iteration) > 1:
     try:
-        previous_scaffolds = pickle.load(open(args.directory+'/scaffolds_iteration_'+str(iteration-1)+'.p','r'))
+        previous_scaffolds = pickle.load(open(args.directory+'/scaffolds_iteration_'+str(iteration-1)+'.p','rb'))
         for key in previous_scaffolds:
             contigs_1 = previous_scaffolds[key]
             first = contigs_1[0].split(':')[0]
@@ -240,7 +240,7 @@ tenx_graph = nx.Graph()
 
 
 #Load the best score graph first, keep log of used and unused links
-print >> sys.stderr,  'Loading Hi-C links '
+print('Loading Hi-C links ', file=sys.stderr)
 '''
 Counts to keep log of each types of edge loaded in the graph
 '''
@@ -257,11 +257,11 @@ def test_edge(scaffold_first,scaffold_second,G_test,type):
     last_first = scaffold_first[-1]
     first_second = scaffold_second[0]
     last_second = scaffold_second[-1]
-    print 'testing'
-    print first_first
-    print first_second
-    print last_first
-    print last_second
+    print('testing')
+    print(first_first)
+    print(first_second)
+    print(last_first)
+    print(last_second)
     if G_test.has_edge(last_first,first_second):
         v1 = c1+':E'
         v2 = c2 +':B'
@@ -579,8 +579,8 @@ def generate_scaffold_graph():
     for ctg in list(contigs):
         G.add_edge(ctg+":B", ctg+":E", t="c", score=0, linktype='implicit')
 
-    print >> sys.stderr, 'Hybrid scaffold graph loaded, nodes = ' + str(len(G.nodes())) + ' edges = ' + str(len(G.edges()))
-    print >> sys.stderr, 'Hi-C implied edges = ' + str(hic_edges)
+    print('Hybrid scaffold graph loaded, nodes = ' + str(len(G.nodes())) + ' edges = ' + str(len(G.edges())), file=sys.stderr)
+    print('Hi-C implied edges = ' + str(hic_edges), file=sys.stderr)
 
 
 '''
@@ -592,7 +592,8 @@ def get_seed_scaffold():
     seed_scaffolds = {} #this stores initial long scaffolds
     to_merge = set()
 
-    for subg in nx.connected_component_subgraphs(G):
+    #for subg in nx.connected_component_subgraphs(G):
+    for subg in (G.subgraph(c) for c in nx.connected_components(G)):
         p = []
         for node in subg.nodes():
             if subg.degree(node) == 1:
@@ -664,7 +665,7 @@ def insert(assignment, seed_scaffolds):
         orientation = ''
         pos = -1
         #first check at all middle positions
-        for i in xrange(1,len(path)-1,2):
+        for i in range(1,len(path)-1,2):
             score_fow = -1
             score_rev = -1
             if all_G.has_edge(five_prime,path[i]) and all_G.has_edge(three_prime,path[i+1]):
@@ -722,7 +723,7 @@ def update_bed(expanded_scaffold):
         path = expanded_scaffold[key]
         scaffold_length[key] = 0
         offset = 0
-        for i in xrange(0,len(path),2):
+        for i in range(0,len(path),2):
             contig = path[i].split(':')[0]
             contig2scaffold[contig] = key
             ori = path[i].split(':')[1] + path[i+1].split(':')[1]
@@ -735,7 +736,7 @@ def update_bed(expanded_scaffold):
 
     scaffold_re = {}
     for key in expanded_scaffold:
-        print key
+        print(key)
         path = expanded_scaffold[key]
         length = scaffold_length[key]
         offset = 0
@@ -751,7 +752,7 @@ def update_bed(expanded_scaffold):
                 scaffold_re[key] = (right,left)
         else:
             midpoint = length/2
-            for i in xrange(0,len(path),2):
+            for i in range(0,len(path),2):
                 contig = path[i].split(':')[0]
                 contig2scaffold[contig] = key
                 left,right = re_counts[contig]
@@ -915,7 +916,8 @@ def merge(contigs):
 
     #print best_hic_graph.nodes()
 
-    for g in nx.connected_component_subgraphs(best_hic_graph):
+    #for g in nx.connected_component_subgraphs(best_hic_graph):
+    for g in (best_hic_graph.subgraph(c) for c in nx.connected_components(best_hic_graph)):
         #print g.nodes()
         p = []
         for node in g.nodes():
@@ -983,7 +985,7 @@ for key in final_scaffolds:
     path = final_scaffolds[key]
     new_path = []
     #print path
-    for i in xrange(0,len(path)-1,2):
+    for i in range(0,len(path)-1,2):
         #print path
         contig = path[i].split(':')[0]
         scaffolded_contigs[contig] = True
@@ -1010,7 +1012,7 @@ for key in final_scaffolds:
     oline = ''
     oline += 'scaffold_'+str(key) +'\t'
     cum_len = 0
-    for i in xrange(0,len(path)-1,2):
+    for i in range(0,len(path)-1,2):
         #print path
         contig = path[i].split(':')[0]
         cum_len += prev_len[contig]
@@ -1095,7 +1097,7 @@ Now break the scaffolds at all the junctions where link support is less than 10,
 
 # expanded_scaffold_paths = updated_scaffolds
 
-pickle.dump(expanded_scaffold_paths,open(args.directory+'/scaffolds_iteration_'+str(args.iteration)+'.p','w'))
+pickle.dump(expanded_scaffold_paths,open(args.directory+'/scaffolds_iteration_'+str(args.iteration)+'.p','wb'))
 update_bed(expanded_scaffold_paths)
 
 

@@ -1,4 +1,4 @@
-#!/usr/bin/env python2
+#!/usr/bin/env python
 import re 
 import sys
 import argparse
@@ -11,7 +11,7 @@ def parse_fasta(fh):
         if ln[0] == '>':
             # check for bad name
             if ":" in ln:
-                print >> sys.stderr, "Error, your fasta records contain a ':' (%s). SALSA requires fasta to not contain this character, please update your fasta and re-try"%(ln[1:].rstrip())
+                print("Error, your fasta records contain a ':' (%s). SALSA requires fasta to not contain this character, please update your fasta and re-try"%(ln[1:].rstrip()), file=sys.stderr)
                 sys.exit(1)
 
             # new name line; remember current sequence's short name
@@ -22,7 +22,7 @@ def parse_fasta(fh):
             # append nucleotides to current sequence
             fa[current_short_name].append(ln.rstrip())
     # Part 2: join lists into strings
-    for short_name, nuc_list in fa.iteritems():
+    for short_name, nuc_list in fa.items():
         # join this sequence's lines into one long string
         fa[short_name] = ''.join(nuc_list)
     return fa
@@ -39,14 +39,14 @@ def main():
     if args.enzyme == "DNASE":
         for key in f:
             id, seq = key, f[key]
-            print id, len(seq)/2, len(seq)/2
+            print(id, len(seq)/2, len(seq)/2)
         sys.exit(0)
 
     enzymes_input = args.enzyme.replace(' ','').split(',')
     final_enzymes = []
     for each in enzymes_input:
         if not re.match("^[ACGTN]+$", each):
-            print >> sys.stderr, "Error, enzyme should be restriction site sequence (e.g. AACTT) not enzyme name or DNASE, you input %s"%(each)
+            print("Error, enzyme should be restriction site sequence (e.g. AACTT) not enzyme name or DNASE, you input %s"%(each), file=sys.stderr)
             sys.exit(1)
 
         if 'N' in each:
@@ -85,7 +85,7 @@ def main():
         #     else:
         #         rigt_count += 1
 
-        print id, left_count, rigt_count
+        print(id, left_count, rigt_count)
 
     
 

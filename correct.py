@@ -1,4 +1,4 @@
-#!/usr/bin/env python2
+#!/usr/bin/env python
 import sys
 
 #reads input assembly, breakpoints given by the method and outputs new contig file with lengths
@@ -18,7 +18,7 @@ def parse_fasta(fh):
             # append nucleotides to current sequence
             fa[current_short_name].append(ln.rstrip())
     # Part 2: join lists into strings
-    for short_name, nuc_list in fa.iteritems():
+    for short_name, nuc_list in fa.items():
         # join this sequence's lines into one long string
         fa[short_name] = ''.join(nuc_list)
     return fa
@@ -94,7 +94,7 @@ ofile.close()
 ofasta = open(sys.argv[4]+'/asm.cleaned.fasta','w')
 for seq in contig2newseq:
     contig_seq = contig2newseq[seq]
-    chunks = [contig_seq[i:i+80] for i in xrange(0,len(contig_seq),80)]
+    chunks = [contig_seq[i:i+80] for i in range(0,len(contig_seq),80)]
     ofasta.write('>'+seq+'\n')
     for chunk in chunks:
         ofasta.write(chunk+'\n')
