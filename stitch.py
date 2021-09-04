@@ -22,12 +22,12 @@ def parse_fasta(fh):
             fa[current_short_name] = []
         else:
             fa[current_short_name].append(ln.rstrip())
-    for short_name, nuc_list in fa.iteritems():
+    for short_name, nuc_list in fa.items():
         fa[short_name] = ''.join(nuc_list)
     return fa
 
 
-scaffolds = pickle.load(open(args.pickle,'r'))
+scaffolds = pickle.load(open(args.pickle,'rb'))
 
 contig_seqs = parse_fasta(open(args.contigs,'r'))
 unitig_seqs = parse_fasta(open(args.unitigs,'r'))
@@ -68,7 +68,7 @@ for scaffold in scaffolds:
     contig_end = 0
     path_normal = []
     path_with_ori = []
-    for i in xrange(0,len(path),2):
+    for i in range(0,len(path),2):
        path_normal.append(path[i].split(':')[0])
        if path[i].split(':')[1] + path[i+1].split(':')[1] == 'BE':
         path_with_ori.append(path[i].split(':')[0]+':FOW')
@@ -166,9 +166,9 @@ for scaffold in scaffolds:
 
     scaffold_seq = ''
     gap = ''
-    for i in xrange(500):
+    for i in range(500):
         gap += 'N'
-    for i in xrange(len(new_path)):
+    for i in range(len(new_path)):
         if len(new_path[i]) != 4:
             utg,ori = new_path[i].split(':')
             if ori == 'FOW':
@@ -191,14 +191,14 @@ for scaffold in scaffolds:
                 scaffold_seq += gap
     ofile.write('>scaffold_'+str(scaffold_id)+'\n')
     scaffold_id += 1
-    chunks = [scaffold_seq[i:i+80] for i in xrange(0,len(scaffold_seq),80)]
+    chunks = [scaffold_seq[i:i+80] for i in range(0,len(scaffold_seq),80)]
     for each in chunks:
         ofile.write(each+'\n')
 
-    print "=============================="
-    print path_with_ori
-    print new_path
-    print "============================="
+    print("==============================")
+    print(path_with_ori)
+    print(new_path)
+    print("=============================")
 
 
 

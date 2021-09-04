@@ -1,4 +1,4 @@
-#!/usr/bin/env python2
+#!/usr/bin/env python
 import pickle
 import argparse
 
@@ -16,7 +16,7 @@ def parse_fasta(fh):
             # append nucleotides to current sequence
             fa[current_short_name].append(ln.rstrip())
     # Part 2: join lists into strings
-    for short_name, nuc_list in fa.iteritems():
+    for short_name, nuc_list in fa.items():
         # join this sequence's lines into one long string
         fa[short_name] = ''.join(nuc_list)
     return fa
@@ -30,7 +30,7 @@ parser.add_argument("-p","--map",help="pickle map of scaffolds")
 args = parser.parse_args()
 
 revcompl = lambda x: ''.join([{'A':'T','B':'N','C':'G','G':'C','T':'A','N':'N','R':'N','M':'N','Y':'N','S':'N','W':'N','K':'N','a':'t','c':'g','g':'c','t':'a','n':'n',' ':'',}[B] for B in x][::-1])
-scaff_map = pickle.load(open(args.map,'r'))
+scaff_map = pickle.load(open(args.map,'rb'))
 
 contig_length = {}
 id2seq = {}
@@ -46,11 +46,11 @@ scaff2length = {}
 for scaffold in scaff_map:
 	path = scaff_map[scaffold]
 	length = 0
-	for i in xrange(0,len(path)-1,2):
+	for i in range(0,len(path)-1,2):
 		length += contig_length[path[i].split(':')[0]]
 	scaff2length[scaffold] = length
 
-sorted_scaffolds = sorted(scaff2length.items(), key=lambda x: x[1],reverse=True)
+sorted_scaffolds = sorted(list(scaff2length.items()), key=lambda x: x[1],reverse=True)
 
 c_id = 1
 line = ""
@@ -114,7 +114,7 @@ for key in sorted_scaffolds:
     # rec = SeqRecord(Seq(curr_contig,generic_dna),id='scaffold_'+str(c_id))
     # recs.append(rec)
     # print c_id
-    chunks = [curr_contig[i:i+80] for i in xrange(0,len(curr_contig),80)]
+    chunks = [curr_contig[i:i+80] for i in range(0,len(curr_contig),80)]
     ofile.write('>scaffold_'+str(c_id)+'\n')
     for chunk in chunks:
         ofile.write(chunk+'\n')

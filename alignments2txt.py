@@ -1,4 +1,4 @@
-#!/usr/bin/env python2
+#!/usr/bin/env python
 import os,sys
 import argparse
 import pickle
@@ -48,7 +48,7 @@ def update_bed(expanded_scaffold):
         path = expanded_scaffold[key]
         scaffold_length[key] = 0
         offset = 0
-        for i in xrange(0,len(path)-1,2):
+        for i in range(0,len(path)-1,2):
             contig = path[i].split(':')[0]
             contig2scaffold[contig] = key
             ori = path[i].split(':')[1] + path[i+1].split(':')[1]
@@ -117,7 +117,7 @@ def update_bed(expanded_scaffold):
                             #o_lines += curr_scaffold+'\t'+str(new_curr_start)+'\t'+str(new_curr_end)+'\t'+curr_attrs[3]+'\n'
                             count += 1
                             if count == 1000000:
-                                print olines
+                                print(olines)
                                 #output.write(o_lines)
                                 count = 0
                                 olines = ""
@@ -125,7 +125,7 @@ def update_bed(expanded_scaffold):
                 prev_line = line
 
             #write remaining lines
-            print olines
+            print(olines)
             #output.write(o_lines)
             #output.close()
 

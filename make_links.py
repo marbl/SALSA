@@ -1,4 +1,4 @@
-#!/usr/bin/env python2
+#!/usr/bin/env python
 import operator
 import math
 import sys
@@ -55,7 +55,7 @@ def main():
     coordinates_map = {}
     first_in_pair = {}
     second_in_pair = {}
-    print >> sys.stderr, 'bedfile started'
+    print('bedfile started', file=sys.stderr)
     prev_line = ''
     with open(args.mapping,'r') as f:
         for line in f:
@@ -78,8 +78,8 @@ def main():
                 if prev_read.split('/')[0] == curr_read.split('/')[0]:
                     #print 'here'
 
-                    pos1 = (long(prev_attrs[1]) + long(prev_attrs[2]))/2.0
-                    pos2 = (long(attrs[1]) + long(attrs[2]))/2.0
+                    pos1 = (int(prev_attrs[1]) + int(prev_attrs[2]))/2.0
+                    pos2 = (int(attrs[1]) + int(attrs[2]))/2.0
                     # l1 = 300000.0
                     # l2 = 300000.0
                     #print pos1, pos2
@@ -152,11 +152,11 @@ def main():
             #     continue
 
 
-    print >> sys.stderr, 'bedfile loaded'
+    print('bedfile loaded', file=sys.stderr)
 
 
 
-    print len(contig_links)
+    print(len(contig_links))
     ofile = open(args.directory+'/contig_links_iteration_'+str(iteration),'w')
     for key in contig_links:
         if key != '':
