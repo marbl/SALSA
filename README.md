@@ -28,9 +28,9 @@ The new version of SALSA has been designed to consider several use cases dependi
 
 ```
 python run_pipeline.py -h
-usage: run_pipeline.py [-h] -a ASSEMBLY -l LENGTH -b BED [-o OUTPUT]
-                       [-c CUTOFF] [-g GFA] [-u UNITIGS] [-e ENZYME]
-                       [-i ITER] [-x DUP] [-s EXP] [-m CLEAN]
+usage: run_pipeline.py [-h] -a ASSEMBLY -l LENGTH -b BED [-o OUTPUT] [-O]
+                       [-c CUTOFF] [-g GFA] [-e ENZYME] [-i ITER] [-x DUP]
+                       [-s EXP] [-m CLEAN] [-f FILTER] [-p PRNT]
 
 SALSA Iterative Pipeline
 
@@ -43,6 +43,9 @@ optional arguments:
   -b BED, --bed BED     Bed file of alignments sorted by read names
   -o OUTPUT, --output OUTPUT
                         Output directory to put results
+  -O, --output-original-coords
+                        Run python run_pipeline.py -h to see the help
+                        message for this option.
   -c CUTOFF, --cutoff CUTOFF
                         Minimum contig length to scaffold, default=1000
   -g GFA, --gfa GFA     GFA file for assembly
@@ -54,6 +57,10 @@ optional arguments:
   -m CLEAN, --clean CLEAN
                         Set this option to "yes" if you want to find
                         misassemblies in input assembly
+  -f FILTER, --filter FILTER
+                        Filter bed file for contigs present in the assembly
+  -p PRNT, --prnt PRNT  Set this option to "yes" if you want to output the
+                        scaffolds sequence and agp file for each iteration
 ```
 
 ### Mapping Reads

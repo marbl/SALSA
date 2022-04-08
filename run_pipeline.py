@@ -39,6 +39,21 @@ def main():
     parser.add_argument('-l','--length',help='Length of contigs at start',required=True)
     parser.add_argument('-b','--bed',help='Bed file of alignments sorted by read names',required=True)
     parser.add_argument('-o','--output',help='Output directory to put results',required=False,default='SALSA_output')
+    parser.add_argument('-O','--output-original-coords', action="store_true", dest="orig_coords", required=False,
+                                                         help='Create secondary output AGP file with names and coordinates '
+                                                              'matching the original input assembly (provided with -a,--assembly) '
+                                                              'instead of matching the cleaned assembly (-m,--clean) where mis-assemblies '
+                                                              'were broken. Use of this option requires -m,--clean. The additional output '
+                                                              'filename will be the existing output AGP names, except that the '
+                                                              '.original-coordinates will be appended before the filename extension (.agp), '
+                                                              'e.g., scaffolds_FINAL.agp will be accompanied by '
+                                                              'scaffolds_FINAL.original-coordinates.agp. Be advised that the W records may '
+                                                              'seem strange in this file, e.g., when the second portion of a broken contig is '
+                                                              'linked on the 5` end to another contig. In such a case, you must remember that '
+                                                              'the first portion of the broken contig was treated independently, so no '
+                                                              'assumptions about the similarity, connectedness, order, or orientation may be '
+                                                              'made with respect to the first portion and any part the second portion links to, '
+                                                              'and vice versa. [default: output not generated]')
     parser.add_argument('-c','--cutoff',help='Minimum contig length to scaffold, default=1000',required=False,default=1000)
     parser.add_argument('-g','--gfa',help='GFA file for assembly',required=False,default='abc')
     #parser.add_argument('-u','--unitigs',help='The tiling of unitigs to contigs in bed format',required=False,default='abc')
@@ -54,6 +69,10 @@ def main():
 
     args = parser.parse_args()
 
+    # complain if -O is used w/o -m
+    if args.orig_coords and args.clean != "yes":
+        print >> sys.stderr, "ERROR: You must use -m,--clean 'yes' with -O,--output-original-coords."
+        sys.exit(1)
 
     #iteration counter
     iter_num = 1
@@ -225,6 +244,8 @@ def main():
 
     if args.prnt == 'yes':
         cmd = 'python2 ' + bin+'/get_seq.py -a '+ args.output +'/assembly.cleaned.fasta -f ' + args.output+'/scaffolds_ITERATION_'+str(iter_num)+'.fasta -g ' + args.output+'/scaffolds_ITERATION_'+str(iter_num)+'.agp -p '+ args.output+'/scaffolds_iteration_'+str(iter_num)+'.p'
+        if args.orig_coords:
+            cmd += ' -b ' + args.output + '/input_breaks -G ' + args.output + '/scaffolds_ITERATION_' + str(iter_num) + '.original-coordinates.agp'
         log.write(cmd+'\n')
         try:
             p = subprocess.check_output(cmd,shell=True)
@@ -241,6 +262,8 @@ def main():
         ng50.append(NG50(scaffold_length,genome_size))
     if iter_num - 1 == int(args.iter):
         cmd ='python2 '+bin+'/get_seq.py -a '+ args.output + '/assembly.cleaned.fasta -f ' + args.output+'/scaffolds_FINAL.fasta -g ' + args.output+'/scaffolds_FINAL.agp -p '+args.output+'/scaffolds_iteration_'+str(args.iter)+'.p'
+        if args.orig_coords:
+            cmd += ' -b ' + args.output + '/input_breaks -G ' + args.output + '/scaffolds_FINAL.original-coordinates.agp'
         log.write(cmd+'\n')
         os.system(cmd)
         sys.exit(0)
@@ -327,6 +350,8 @@ def main():
 
         if args.prnt == 'yes':
             cmd = 'python2 ' + bin+'/get_seq.py -a '+ args.output +'/assembly.cleaned.fasta -f ' + args.output+'/scaffolds_ITERATION_'+str(iter_num)+'.fasta -g ' + args.output+'/scaffolds_ITERATION_'+str(iter_num)+'.agp -p '+ args.output+'/scaffolds_iteration_'+str(iter_num)+'.p'
+            if args.orig_coords:
+                cmd += ' -b ' + args.output + '/input_breaks -G ' + args.output + '/scaffolds_ITERATION_' + str(iter_num) + '.original-coordinates.agp'
             log.write(cmd+'\n')
             try:
                 p = subprocess.check_output(cmd,shell=True)
@@ -342,6 +367,8 @@ def main():
             curr_sz = len(ng50)
             if ng50[curr_sz - 1] == ng50[curr_sz - 2]:
                 cmd ='python2 '+bin+'/get_seq.py -a '+ args.output + '/assembly.cleaned.fasta -f ' + args.output+'/scaffolds_FINAL.fasta -g ' + args.output+'/scaffolds_FINAL.agp -p '+args.output+'/scaffolds_iteration_'+str(iter_num-1)+'.p'
+                if args.orig_coords:
+                    cmd += ' -b ' + args.output + '/input_breaks -G ' + args.output + '/scaffolds_FINAL.original-coordinates.agp'
                 log.write(cmd+'\n')
                 os.system(cmd)
                 sys.exit(0)
@@ -349,6 +376,8 @@ def main():
 
         if iter_num - 1 == int(args.iter):
             cmd ='python2 '+bin+'/get_seq.py -a '+ args.output + '/assembly.cleaned.fasta -f ' + args.output+'/scaffolds_FINAL.fasta -g ' + args.output+'/scaffolds_FINAL.agp -p '+args.output+'/scaffolds_iteration_'+str(args.iter)+'.p'
+            if args.orig_coords:
+                cmd += ' -b ' + args.output + '/input_breaks -G ' + args.output + '/scaffolds_FINAL.original-coordinates.agp'
             log.write(cmd+'\n')
             os.system(cmd)
             sys.exit(0)
