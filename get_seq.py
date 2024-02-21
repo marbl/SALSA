@@ -84,7 +84,7 @@ parser.add_argument("-p","--map",help="pickle map of scaffolds (input, required)
 
 args = parser.parse_args()
 
-revcompl = lambda x: ''.join([{'A':'T','B':'N','C':'G','G':'C','T':'A','N':'N','R':'N','M':'N','Y':'N','S':'N','W':'N','K':'N','a':'t','c':'g','g':'c','t':'a','n':'n',' ':'',}[B] for B in x][::-1])
+revcompl = lambda x: ''.join([{'A':'T','B':'N','C':'G','G':'C','T':'A','N':'N','R':'N','M':'N','Y':'N','S':'N','W':'N','K':'N','V':'N','H':'N','D':'N','a':'t','c':'g','g':'c','t':'a','n':'n',' ':'',}[B] for B in x][::-1])
 scaff_map = pickle.load(open(args.map,'r'))
 
 contig_length = {}
