@@ -160,10 +160,10 @@ with open(args.agp, 'w') as agp_output:
                 local_comp += 1
 
                 if i != len(path) - 2:
-                    curr_contig += 'N' * 500
+                    curr_contig += 'N' * 100
 
-                    end = 500 + start - 1
-                    line = "scaffold_" + str(c_id) + '\t' + str(start) + '\t' + str(end) + '\t' + str(local_comp) + '\t' + "N\t500\tscaffold\tyes\tna\n"
+                    end = 100 + start - 1
+                    line = "scaffold_" + str(c_id) + '\t' + str(start) + '\t' + str(end) + '\t' + str(local_comp) + '\t' + "U\t100\tscaffold\tyes\tproximity_ligation\n"
                     agp_output.write(line)
                     if write_agp_orig_coords:
                         agp_origcoords_output.write(line)
